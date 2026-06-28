@@ -282,6 +282,105 @@ const swaggerSpec = {
         },
       },
     },
+    '/auth/profile': {
+      get: {
+        summary: 'Get User Profile',
+        description: 'Endpoint untuk mendapatkan profil user yang sedang login',
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Success retrieve profile',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: true,
+                    },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'string',
+                          example: 'uuid',
+                        },
+                        name: {
+                          type: 'string',
+                          example: 'John Doe',
+                        },
+                        email: {
+                          type: 'string',
+                          example: 'johndoe@example.com',
+                        },
+                        role: {
+                          type: 'string',
+                          example: 'BUYER',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: {
+            description: 'Unauthorized',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Unauthorized: Missing or invalid token format',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          404: {
+            description: 'User not found',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'User not found',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    },
   },
 };
 

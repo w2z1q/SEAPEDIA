@@ -42,8 +42,27 @@ const login = async (req, res) => {
   }
 };
 
+const profile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const userProfile = await authService.getProfile(userId);
+
+    res.status(200).json({
+      success: true,
+      data: userProfile
+    });
+  } catch (error) {
+    if (error.status === 404) {
+      return res.status(404).json({ success: false, message: error.message });
+    }
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   test,
   register,
-  login
+  login,
+  profile
 };
