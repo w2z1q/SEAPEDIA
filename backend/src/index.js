@@ -17,7 +17,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 const authRoute = require('./routes/auth.route');
+const storeRoute = require('./routes/store.route');
 app.use('/auth', authRoute);
+app.use('/store', storeRoute);
 
 // Base Health Check Route
 app.get('/', (req, res) => {

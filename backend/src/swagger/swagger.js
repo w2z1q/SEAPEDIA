@@ -425,6 +425,250 @@ const swaggerSpec = {
         },
       },
     },
+    '/store': {
+      post: {
+        summary: 'Create Store',
+        description: 'Endpoint untuk Seller membuat toko baru',
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string',
+                    example: 'SeaFood Store',
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Store created successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: true,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Store created successfully',
+                    },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'string',
+                          example: 'uuid',
+                        },
+                        name: {
+                          type: 'string',
+                          example: 'SeaFood Store',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Validation Error',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Store name must be at least 3 characters long',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: {
+            description: 'Unauthorized',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Unauthorized: Missing or invalid token format',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          403: {
+            description: 'Forbidden',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Forbidden: Insufficient permissions',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          409: {
+            description: 'Store already exists',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Store already exists for this user',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/store/me': {
+      get: {
+        summary: 'Get My Store',
+        description: 'Endpoint untuk mendapatkan informasi toko milik seller yang sedang login',
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Success retrieve store',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: true,
+                    },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'string',
+                          example: 'uuid',
+                        },
+                        name: {
+                          type: 'string',
+                          example: 'SeaFood Store',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: {
+            description: 'Unauthorized',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Unauthorized: Missing or invalid token format',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          403: {
+            description: 'Forbidden',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Forbidden: Insufficient permissions',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          404: {
+            description: 'Store not found',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Store not found',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {
