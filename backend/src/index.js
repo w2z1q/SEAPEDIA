@@ -15,6 +15,10 @@ app.use(express.urlencoded({ extended: true }));
 // Swagger API Documentation Route
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// Routes
+const authRoute = require('./routes/auth.route');
+app.use('/auth', authRoute);
+
 // Base Health Check Route
 app.get('/', (req, res) => {
   res.json({

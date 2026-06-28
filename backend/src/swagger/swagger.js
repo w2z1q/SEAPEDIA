@@ -44,6 +44,110 @@ const swaggerSpec = {
         },
       },
     },
+    '/auth/test': {
+      get: {
+        summary: 'Auth Test Endpoint',
+        description: 'Mengecek ketersediaan module authentication',
+        responses: {
+          200: {
+            description: 'Auth module siap digunakan',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      example: 'Auth module is ready',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/auth/register': {
+      post: {
+        summary: 'Register User Baru',
+        description: 'Endpoint untuk mendaftarkan user baru',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string',
+                    example: 'John Doe',
+                  },
+                  email: {
+                    type: 'string',
+                    example: 'johndoe@example.com',
+                  },
+                  password: {
+                    type: 'string',
+                    example: 'password123',
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'User registered successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      example: 'User registered successfully',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Validation Error',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      example: 'Password must be at least 8 characters long',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          409: {
+            description: 'Email already exists',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    message: {
+                      type: 'string',
+                      example: 'Email already exists',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
 
