@@ -95,10 +95,45 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const getProducts = async (req, res) => {
+  try {
+    const result = await productService.getAllProducts(req.query);
+    
+    res.status(200).json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination
+    });
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const getPublicProductById = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const product = await productService.getProductDetail(productId);
+    
+    res.status(200).json({
+      success: true,
+      data: product
+    });
+  } catch (error) {
+    if (error.status === 404) {
+      return res.status(404).json({ success: false, message: error.message });
+    }
+    console.error('Error fetching public product by id:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createProduct,
   getMyProducts,
   getProductById,
   updateProduct,
   deleteProduct,
+  getProducts,
+  getPublicProductById,
 };

@@ -56,7 +56,7 @@ const getMyProducts = async (sellerId) => {
 const getProductById = async (sellerId, productId) => {
   const store = await getSellerStore(sellerId);
   const product = await findOwnedProduct(store.id, productId);
-  
+
   return product;
 };
 
@@ -83,10 +83,78 @@ const deleteProduct = async (sellerId, productId) => {
   return { success: true };
 };
 
+const getAllProducts = async (filters) => {
+  const page = parseInt(filters.page) || 1;
+  const limit = parseInt(filters.limit) || 12;
+  const skip = (page - 1) * limit;
+
+  // Search filter if provided
+  const where = {};
+
+  if (filters.search) {
+    where.name = {
+      contains: filters.search,
+      mode: 'insensitive'
+    };
+  }
+
+  const [total, products] = await Promise.all([
+    prisma.product.count({ where }),
+    prisma.product.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    })
+  ]);
+
+  return {
+    data: products,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    }
+  };
+};
+
+const getProductDetail = async (productId) => {
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: {
+      store: {
+        select: {
+          id: true,
+          name: true
+        }
+      }
+    }
+  });
+
+  if (!product) {
+    const error = new Error('Product not found');
+    error.status = 404;
+    throw error;
+  }
+
+  return product;
+};
+
 module.exports = {
   createProduct,
   getMyProducts,
   getProductById,
   updateProduct,
   deleteProduct,
+  getAllProducts,
+  getProductDetail,
 };

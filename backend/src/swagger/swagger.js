@@ -670,6 +670,74 @@ const swaggerSpec = {
       },
     },
     '/products': {
+      get: {
+        summary: 'Get All Products',
+        description: 'Endpoint publik untuk melihat katalog produk',
+        parameters: [
+          {
+            in: 'query',
+            name: 'page',
+            schema: { type: 'integer', default: 1 },
+            description: 'Page number',
+          },
+          {
+            in: 'query',
+            name: 'limit',
+            schema: { type: 'integer', default: 12 },
+            description: 'Items per page',
+          },
+          {
+            in: 'query',
+            name: 'search',
+            schema: { type: 'string' },
+            description: 'Search by product name',
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Success retrieve all products',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', example: 'uuid' },
+                          name: { type: 'string', example: 'Fresh Salmon' },
+                          description: { type: 'string', example: 'Fresh Norwegian Salmon' },
+                          price: { type: 'number', example: 120000 },
+                          stock: { type: 'number', example: 20 },
+                          store: {
+                            type: 'object',
+                            properties: {
+                              id: { type: 'string', example: 'store-uuid' },
+                              name: { type: 'string', example: 'SeaFresh Store' }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    pagination: {
+                      type: 'object',
+                      properties: {
+                        page: { type: 'integer', example: 1 },
+                        limit: { type: 'integer', example: 12 },
+                        total: { type: 'integer', example: 85 },
+                        totalPages: { type: 'integer', example: 8 },
+                      }
+                    }
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       post: {
         summary: 'Create Product',
         description: 'Endpoint untuk Seller membuat produk baru',
@@ -760,8 +828,7 @@ const swaggerSpec = {
     '/products/{id}': {
       get: {
         summary: 'Get Product Details',
-        description: 'Endpoint untuk mendapatkan detail produk milik seller',
-        security: [{ bearerAuth: [] }],
+        description: 'Endpoint publik untuk mendapatkan detail produk',
         parameters: [
           {
             in: 'path',
@@ -772,9 +839,36 @@ const swaggerSpec = {
           },
         ],
         responses: {
-          200: { description: 'Success retrieve product' },
-          401: { description: 'Unauthorized' },
-          403: { description: 'Forbidden' },
+          200: {
+            description: 'Success retrieve product',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'uuid' },
+                        name: { type: 'string', example: 'Fresh Salmon' },
+                        description: { type: 'string', example: 'Fresh Norwegian Salmon' },
+                        price: { type: 'number', example: 120000 },
+                        stock: { type: 'number', example: 20 },
+                        store: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string', example: 'store-uuid' },
+                            name: { type: 'string', example: 'SeaFresh Store' }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           404: { description: 'Product not found' },
         },
       },

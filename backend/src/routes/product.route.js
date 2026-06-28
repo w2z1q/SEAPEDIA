@@ -5,13 +5,18 @@ const { verifyToken, authorize } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
-router.use(verifyToken);
-router.use(authorize('SELLER'));
+// Public routes
+router.get('/', productController.getProducts);
 
-router.post('/', productValidator.validateCreateProduct, productController.createProduct);
-router.get('/me', productController.getMyProducts);
-router.get('/:id', productController.getProductById);
-router.put('/:id', productValidator.validateUpdateProduct, productController.updateProduct);
-router.delete('/:id', productController.deleteProduct);
+// Protected routes
+router.get('/me', verifyToken, authorize('SELLER'), productController.getMyProducts);
+
+// Public route (must be after /me)
+router.get('/:id', productController.getPublicProductById);
+
+// Protected routes for modifications
+router.post('/', verifyToken, authorize('SELLER'), productValidator.validateCreateProduct, productController.createProduct);
+router.put('/:id', verifyToken, authorize('SELLER'), productValidator.validateUpdateProduct, productController.updateProduct);
+router.delete('/:id', verifyToken, authorize('SELLER'), productController.deleteProduct);
 
 module.exports = router;
