@@ -97,6 +97,29 @@ const addToCart = async (userId, data) => {
       return await prisma.$transaction(async (tx) => {
         const cart = await getOrCreateCart(userId, tx);
 
+        const existingItems = await tx.cartItem.findMany({
+          where: { cartId: cart.id },
+          include: {
+            product: {
+              select: { storeId: true },
+            },
+          },
+        });
+
+        if (existingItems.length > 0) {
+          const firstItemStoreId = existingItems[0].product.storeId;
+          const targetProduct = await tx.product.findUnique({
+            where: { id: data.productId },
+            select: { storeId: true },
+          });
+
+          if (targetProduct && firstItemStoreId !== targetProduct.storeId) {
+            const error = new Error('Cart already contains products from another store. Please clear your cart first.');
+            error.status = 409;
+            throw error;
+          }
+        }
+
         const existing = await tx.cartItem.findFirst({
           where: { cartId: cart.id, productId: data.productId },
         });

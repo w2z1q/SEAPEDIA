@@ -1425,6 +1425,225 @@ const swaggerSpec = {
         },
       },
     },
+    '/orders': {
+      get: {
+        summary: 'Get Buyer Orders',
+        description: 'Endpoint untuk Buyer melihat seluruh riwayat pesanannya (diurutkan berdasarkan createdAt DESC)',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Daftar riwayat pesanan buyer berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', example: 'uuid-order' },
+                          status: { type: 'string', example: 'SEDANG_DIKEMAS' },
+                          total: { type: 'number', example: 240000 },
+                          createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+        },
+      },
+    },
+    '/orders/{id}': {
+      get: {
+        summary: 'Get Order Detail',
+        description: 'Endpoint untuk Buyer melihat detail lengkap pesanannya beserta produk',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' },
+            description: 'Order ID',
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Detail pesanan berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'uuid-order' },
+                        userId: { type: 'string', example: 'uuid-user' },
+                        storeId: { type: 'string', example: 'uuid-store' },
+                        status: { type: 'string', example: 'SEDANG_DIKEMAS' },
+                        subtotal: { type: 'number', example: 240000 },
+                        total: { type: 'number', example: 240000 },
+                        createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                        orderItems: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              id: { type: 'string', example: 'uuid-order-item' },
+                              productId: { type: 'string', example: 'uuid-product' },
+                              quantity: { type: 'integer', example: 2 },
+                              price: { type: 'number', example: 120000 },
+                              product: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string', example: 'uuid-product' },
+                                  name: { type: 'string', example: 'Fresh Salmon' },
+                                  price: { type: 'number', example: 120000 },
+                                  imageUrl: { type: 'string', example: 'https://xxxxx.supabase.co/storage/v1/object/public/products/salmon.jpg' },
+                                  storeId: { type: 'string', example: 'uuid-store' },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Order not found' },
+        },
+      },
+    },
+    '/wallet': {
+      get: {
+        summary: 'Get Buyer Wallet',
+        description: 'Endpoint untuk Buyer melihat informasi dompet beserta riwayat transaksi',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Data wallet dan riwayat transaksi berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'uuid-wallet' },
+                        userId: { type: 'string', example: 'uuid-user' },
+                        balance: { type: 'number', example: 50000 },
+                        createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                        updatedAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                        transactions: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              id: { type: 'string', example: 'uuid-tx' },
+                              walletId: { type: 'string', example: 'uuid-wallet' },
+                              amount: { type: 'number', example: 50000 },
+                              type: { type: 'string', example: 'TOPUP' },
+                              description: { type: 'string', example: 'Top up saldo wallet' },
+                              createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+        },
+      },
+    },
+    '/wallet/topup': {
+      post: {
+        summary: 'Top Up Wallet Balance',
+        description: 'Endpoint untuk Buyer mengisi saldo wallet (minimal 1000)',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  amount: { type: 'number', example: 50000 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Top up berhasil dilakukan',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Top up successful' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        wallet: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string', example: 'uuid-wallet' },
+                            userId: { type: 'string', example: 'uuid-user' },
+                            balance: { type: 'number', example: 100000 },
+                            createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                            updatedAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                          },
+                        },
+                        transaction: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string', example: 'uuid-tx' },
+                            walletId: { type: 'string', example: 'uuid-wallet' },
+                            amount: { type: 'number', example: 50000 },
+                            type: { type: 'string', example: 'TOPUP' },
+                            description: { type: 'string', example: 'Top up saldo wallet' },
+                            createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Bad Request / Amount tidak valid atau di bawah 1000',
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

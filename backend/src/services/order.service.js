@@ -216,6 +216,73 @@ const updateOrderStatus = async (userId, id, status) => {
   return updatedOrder;
 };
 
+const findBuyerOrder = async (userId, orderId) => {
+  const order = await prisma.order.findFirst({
+    where: {
+      id: orderId,
+      userId: userId,
+    },
+    include: {
+      orderItems: {
+        include: {
+          product: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              image: true,
+              storeId: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!order) {
+    const error = new Error('Order not found');
+    error.status = 404;
+    throw error;
+  }
+
+  return order;
+};
+
+const getMyOrders = async (userId) => {
+  const orders = await prisma.order.findMany({
+    where: { userId },
+    orderBy: { createdAt: 'desc' },
+    select: {
+      id: true,
+      status: true,
+      total: true,
+      createdAt: true,
+    },
+  });
+
+  return orders;
+};
+
+const getOrderDetail = async (userId, orderId) => {
+  const order = await findBuyerOrder(userId, orderId);
+
+  const formattedOrder = {
+    ...order,
+    orderItems: order.orderItems.map((item) => ({
+      ...item,
+      product: {
+        id: item.product.id,
+        name: item.product.name,
+        price: item.product.price,
+        imageUrl: item.product.image,
+        storeId: item.product.storeId,
+      },
+    })),
+  };
+
+  return formattedOrder;
+};
+
 module.exports = {
   getCartWithItems,
   calculateOrderTotal,
@@ -223,4 +290,7 @@ module.exports = {
   findSellerOrder,
   getSellerOrders,
   updateOrderStatus,
+  findBuyerOrder,
+  getMyOrders,
+  getOrderDetail,
 };

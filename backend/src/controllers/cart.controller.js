@@ -17,7 +17,7 @@ const addToCart = async (req, res) => {
       });
     }
   } catch (error) {
-    if (error.status === 404 || error.status === 400) {
+    if (error.status === 404 || error.status === 400 || error.status === 409) {
       return res.status(error.status).json({ success: false, message: error.message });
     }
     console.error('Error adding to cart:', error);
