@@ -1,0 +1,127 @@
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
+
+const getStats = async () => {
+  const [
+    totalUsers,
+    totalStores,
+    totalProducts,
+    totalOrders,
+    totalVouchers,
+    totalPromos,
+    totalDriverJobs,
+    orderGroup,
+  ] = await Promise.all([
+    prisma.user.count(),
+    prisma.store.count(),
+    prisma.product.count(),
+    prisma.order.count(),
+    prisma.voucher.count(),
+    prisma.promo.count(),
+    prisma.driverJob.count(),
+    prisma.order.groupBy({
+      by: ['status'],
+      _count: { status: true },
+    }),
+  ]);
+
+  const byStatus = {};
+  for (const group of orderGroup) {
+    byStatus[group.status] = group._count.status;
+  }
+
+  return {
+    users: { total: totalUsers },
+    stores: { total: totalStores },
+    products: { total: totalProducts },
+    orders: { total: totalOrders, byStatus },
+    vouchers: { total: totalVouchers },
+    promos: { total: totalPromos },
+    driverJobs: { total: totalDriverJobs },
+  };
+};
+
+const getUsers = async () => {
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      activeRole: true,
+      createdAt: true,
+      updatedAt: true,
+      roles: {
+        select: {
+          role: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return users;
+};
+
+const getStores = async () => {
+  const stores = await prisma.store.findMany({
+    include: {
+      seller: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return stores;
+};
+
+const getOrders = async () => {
+  const orders = await prisma.order.findMany({
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      store: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return orders;
+};
+
+const getDriverJobs = async () => {
+  const jobs = await prisma.driverJob.findMany({
+    include: {
+      driver: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      order: {
+        include: {
+          store: true,
+          address: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return jobs;
+};
+
+module.exports = {
+  getStats,
+  getUsers,
+  getStores,
+  getOrders,
+  getDriverJobs,
+};

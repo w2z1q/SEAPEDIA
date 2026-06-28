@@ -25,6 +25,7 @@ const walletRoute = require('./routes/wallet.route');
 const reviewRoute = require('./routes/review.route');
 const { voucherRouter, promoRouter } = require('./routes/discount.route');
 const driverRoute = require('./routes/driver.route');
+const adminRoute = require('./routes/admin.route');
 app.use('/auth', authRoute);
 app.use('/store', storeRoute);
 app.use('/products', productRoute);
@@ -35,6 +36,7 @@ app.use('/reviews', reviewRoute);
 app.use('/vouchers', voucherRouter);
 app.use('/promos', promoRouter);
 app.use('/driver', driverRoute);
+app.use('/admin', adminRoute);
 
 // Base Health Check Route
 app.get('/', (req, res) => {

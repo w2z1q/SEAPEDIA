@@ -2150,6 +2150,148 @@ const swaggerSpec = {
         },
       },
     },
+    '/admin/stats': {
+      get: {
+        summary: 'Get Admin Stats (ADMIN Only)',
+        description: 'Endpoint khusus ADMIN untuk melihat statistik menyeluruh atas entitas dan pesanan di marketplace',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Statistik berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        users: { type: 'object', properties: { total: { type: 'integer', example: 10 } } },
+                        stores: { type: 'object', properties: { total: { type: 'integer', example: 5 } } },
+                        products: { type: 'object', properties: { total: { type: 'integer', example: 50 } } },
+                        orders: {
+                          type: 'object',
+                          properties: {
+                            total: { type: 'integer', example: 20 },
+                            byStatus: { type: 'object', properties: { SEDANG_DIKEMAS: { type: 'integer', example: 5 } } },
+                          },
+                        },
+                        vouchers: { type: 'object', properties: { total: { type: 'integer', example: 3 } } },
+                        promos: { type: 'object', properties: { total: { type: 'integer', example: 2 } } },
+                        driverJobs: { type: 'object', properties: { total: { type: 'integer', example: 8 } } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Admin)' },
+        },
+      },
+    },
+    '/admin/users': {
+      get: {
+        summary: 'Get All Users (ADMIN Only)',
+        description: 'Endpoint khusus ADMIN untuk melihat daftar seluruh user beserta rolenya',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Daftar user berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: { type: 'array', items: { type: 'object' } },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Admin)' },
+        },
+      },
+    },
+    '/admin/stores': {
+      get: {
+        summary: 'Get All Stores (ADMIN Only)',
+        description: 'Endpoint khusus ADMIN untuk melihat daftar seluruh toko beserta informasi penjualnya',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Daftar toko berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: { type: 'array', items: { type: 'object' } },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Admin)' },
+        },
+      },
+    },
+    '/admin/orders': {
+      get: {
+        summary: 'Get All Orders (ADMIN Only)',
+        description: 'Endpoint khusus ADMIN untuk melihat daftar seluruh pesanan beserta informasi pembeli dan toko',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Daftar pesanan berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: { type: 'array', items: { type: 'object' } },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Admin)' },
+        },
+      },
+    },
+    '/admin/driver-jobs': {
+      get: {
+        summary: 'Get All Driver Jobs (ADMIN Only)',
+        description: 'Endpoint khusus ADMIN untuk melihat daftar seluruh pekerjaan pengiriman beserta informasi driver dan pesanan',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Daftar driver job berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: { type: 'array', items: { type: 'object' } },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Admin)' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {
