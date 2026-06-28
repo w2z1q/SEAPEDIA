@@ -104,9 +104,17 @@ const swaggerSpec = {
                 schema: {
                   type: 'object',
                   properties: {
+                    success: {
+                      type: 'boolean',
+                      example: true,
+                    },
                     message: {
                       type: 'string',
                       example: 'User registered successfully',
+                    },
+                    data: {
+                      type: 'object',
+                      example: {},
                     },
                   },
                 },
@@ -120,6 +128,10 @@ const swaggerSpec = {
                 schema: {
                   type: 'object',
                   properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
                     message: {
                       type: 'string',
                       example: 'Password must be at least 8 characters long',
@@ -136,9 +148,131 @@ const swaggerSpec = {
                 schema: {
                   type: 'object',
                   properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
                     message: {
                       type: 'string',
                       example: 'Email already exists',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/auth/login': {
+      post: {
+        summary: 'Login User',
+        description: 'Endpoint untuk login user dan mendapatkan JWT',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  email: {
+                    type: 'string',
+                    example: 'johndoe@example.com',
+                  },
+                  password: {
+                    type: 'string',
+                    example: 'password123',
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Login successful',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: true,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Login successful',
+                    },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        accessToken: {
+                          type: 'string',
+                          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+                        },
+                        user: {
+                          type: 'object',
+                          properties: {
+                            id: {
+                              type: 'string',
+                              example: 'uuid',
+                            },
+                            name: {
+                              type: 'string',
+                              example: 'John Doe',
+                            },
+                            email: {
+                              type: 'string',
+                              example: 'johndoe@example.com',
+                            },
+                            role: {
+                              type: 'string',
+                              example: 'BUYER',
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Validation Error',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Email is required',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: {
+            description: 'Unauthorized',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Invalid email or password',
                     },
                   },
                 },
