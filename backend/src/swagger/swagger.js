@@ -1728,6 +1728,99 @@ const swaggerSpec = {
         },
       },
     },
+    '/reviews': {
+      get: {
+        summary: 'Get Public Reviews',
+        description: 'Endpoint publik untuk melihat seluruh ulasan aplikasi SEAPEDIA (diurutkan dari yang terbaru)',
+        responses: {
+          200: {
+            description: 'Daftar ulasan berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', example: 'uuid-review' },
+                          rating: { type: 'integer', example: 5 },
+                          content: { type: 'string', example: 'Aplikasi SEAPEDIA sangat bagus dan mudah digunakan!' },
+                          guestName: { type: 'string', example: 'Guest User' },
+                          userId: { type: 'string', example: null },
+                          user: {
+                            type: 'object',
+                            properties: {
+                              name: { type: 'string', example: 'Hadziq' },
+                            },
+                          },
+                          createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                          updatedAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      post: {
+        summary: 'Create Public Review',
+        description: 'Endpoint publik untuk mengirim ulasan aplikasi SEAPEDIA (bisa sebagai guest atau user login)',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  guestName: { type: 'string', example: 'Budi (Guest)' },
+                  rating: { type: 'integer', example: 5 },
+                  content: { type: 'string', example: 'Aplikasi SEAPEDIA sangat membantu nelayan dan pembeli ikan laut!' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Review berhasil dibuat',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Review created successfully' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'uuid-review' },
+                        rating: { type: 'integer', example: 5 },
+                        content: { type: 'string', example: 'Aplikasi SEAPEDIA sangat membantu nelayan dan pembeli ikan laut!' },
+                        guestName: { type: 'string', example: 'Budi (Guest)' },
+                        userId: { type: 'string', example: null },
+                        createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                        updatedAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Bad Request / rating tidak valid / content kurang dari 10 karakter / guestName kurang dari 2 karakter',
+          },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

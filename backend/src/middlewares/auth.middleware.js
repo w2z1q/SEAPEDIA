@@ -28,7 +28,28 @@ const authorize = (...roles) => {
   };
 };
 
+const optionalAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    req.user = null;
+    return next();
+  }
+
+  const token = authHeader.split(' ')[1];
+  const secret = process.env.JWT_SECRET || 'secret';
+
+  try {
+    const decoded = jwt.verify(token, secret);
+    req.user = decoded;
+  } catch (error) {
+    req.user = null;
+  }
+  next();
+};
+
 module.exports = {
   verifyToken,
   authorize,
+  optionalAuth,
 };
