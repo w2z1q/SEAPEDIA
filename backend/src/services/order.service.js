@@ -137,8 +137,90 @@ const checkout = async (userId) => {
   });
 };
 
+const findSellerOrder = async (userId, orderId) => {
+  const store = await prisma.store.findUnique({
+    where: { sellerId: userId },
+  });
+
+  if (!store) {
+    const error = new Error('Order not found');
+    error.status = 404;
+    throw error;
+  }
+
+  const order = await prisma.order.findFirst({
+    where: {
+      id: orderId,
+      storeId: store.id,
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  if (!order) {
+    const error = new Error('Order not found');
+    error.status = 404;
+    throw error;
+  }
+
+  return { order, store };
+};
+
+const getSellerOrders = async (userId) => {
+  const store = await prisma.store.findUnique({
+    where: { sellerId: userId },
+  });
+
+  if (!store) {
+    return [];
+  }
+
+  const orders = await prisma.order.findMany({
+    where: { storeId: store.id },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return orders.map((order) => ({
+    id: order.id,
+    customer: order.user ? order.user.name : 'Guest',
+    status: order.status,
+    total: order.total,
+    createdAt: order.createdAt,
+  }));
+};
+
+const updateOrderStatus = async (userId, id, status) => {
+  await findSellerOrder(userId, id);
+
+  const mappedStatus = status === 'DIKIRIM' ? 'SEDANG_DIKIRIM' : status;
+
+  const updatedOrder = await prisma.order.update({
+    where: { id },
+    data: { status: mappedStatus },
+  });
+
+  return updatedOrder;
+};
+
 module.exports = {
   getCartWithItems,
   calculateOrderTotal,
   checkout,
+  findSellerOrder,
+  getSellerOrders,
+  updateOrderStatus,
 };

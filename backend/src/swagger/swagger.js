@@ -1330,6 +1330,101 @@ const swaggerSpec = {
         },
       },
     },
+    '/orders/seller': {
+      get: {
+        summary: 'Get Seller Orders',
+        description: 'Endpoint untuk Seller melihat seluruh pesanan yang masuk ke tokonya',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Daftar order toko berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', example: 'uuid-order' },
+                          customer: { type: 'string', example: 'John Doe' },
+                          status: { type: 'string', example: 'SEDANG_DIKEMAS' },
+                          total: { type: 'number', example: 240000 },
+                          createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+        },
+      },
+    },
+    '/orders/{id}/status': {
+      put: {
+        summary: 'Update Order Status',
+        description: 'Endpoint untuk Seller memperbarui status pesanan tokonya (SEDANG_DIKEMAS, DIKIRIM, SEDANG_DIKIRIM, SELESAI)',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' },
+            description: 'Order ID',
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  status: { type: 'string', example: 'SEDANG_DIKIRIM' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Status pesanan berhasil diperbarui',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Order status updated successfully' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'uuid-order' },
+                        status: { type: 'string', example: 'SEDANG_DIKIRIM' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Bad Request / Status tidak valid',
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Order not found' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

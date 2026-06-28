@@ -36,6 +36,45 @@ const checkout = async (req, res) => {
   }
 };
 
+const getSellerOrders = async (req, res) => {
+  try {
+    const sellerId = req.user.id;
+    const orders = await orderService.getSellerOrders(sellerId);
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    console.error('Error fetching seller orders:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const updateOrderStatus = async (req, res) => {
+  try {
+    const sellerId = req.user.id;
+    const orderId = req.params.id;
+    const { status } = req.body;
+
+    const updatedOrder = await orderService.updateOrderStatus(sellerId, orderId, status);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order status updated successfully',
+      data: updatedOrder,
+    });
+  } catch (error) {
+    if (error.status === 404 || error.status === 400) {
+      return res.status(error.status).json({ success: false, message: error.message });
+    }
+    console.error('Error updating order status:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   checkout,
+  getSellerOrders,
+  updateOrderStatus,
 };
