@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const discountService = require('./discount.service');
 
 const prisma = new PrismaClient();
 
@@ -62,11 +63,25 @@ const checkout = async (userId, data = {}) => {
     // 5. Ambil storeId dari produk pertama
     const storeId = cart.cartItems[0].product.storeId;
 
-    // 6. Hitung subtotal, deliveryFee, tax, total
+    // 5b. Validasi voucherId dan promoId jika ada
+    let voucher = null;
+    let promo = null;
+
+    if (data.voucherId) {
+      voucher = await discountService.validateVoucher(data.voucherId, tx);
+    }
+
+    if (data.promoId) {
+      promo = await discountService.validatePromo(data.promoId, storeId, tx);
+    }
+
+    // 6. Hitung subtotal, discount, deliveryFee, tax, total
     const subtotal = calculateOrderTotal(cart.cartItems);
+    const discountPercent = (voucher ? voucher.discount : 0) + (promo ? promo.discount : 0);
+    const discount = subtotal * (discountPercent / 100);
     const deliveryFee = data.deliveryMethod === 'INSTANT' ? 25000 : data.deliveryMethod === 'NEXT_DAY' ? 15000 : 10000;
-    const tax = (subtotal + deliveryFee) * 0.12;
-    const total = subtotal + deliveryFee + tax;
+    const tax = (subtotal - discount + deliveryFee) * 0.12;
+    const total = subtotal - discount + deliveryFee + tax;
 
     // 7. Cek wallet buyer cukup -> throw 400 Insufficient wallet balance kalau kurang
     const wallet = await tx.wallet.findUnique({
@@ -85,11 +100,13 @@ const checkout = async (userId, data = {}) => {
         userId,
         storeId,
         addressId: address.id,
+        voucherId: voucher ? voucher.id : null,
+        promoId: promo ? promo.id : null,
         status: 'SEDANG_DIKEMAS',
         subtotal,
         shippingCost: deliveryFee,
         tax,
-        discount: 0,
+        discount,
         total,
         orderItems: {
           create: cart.cartItems.map((item) => ({
@@ -126,7 +143,7 @@ const checkout = async (userId, data = {}) => {
       });
     }
 
-    // 11. Kurangi wallet buyer + catat WalletTransaction type PAYMENT
+    // 11. Kurangi wallet buyer + catat WalletTransaction type PAYMENT + increment usedCount voucher
     await tx.wallet.update({
       where: { userId },
       data: {
@@ -144,6 +161,17 @@ const checkout = async (userId, data = {}) => {
         description: `Payment for order ${order.id}`,
       },
     });
+
+    if (voucher) {
+      await tx.voucher.update({
+        where: { id: voucher.id },
+        data: {
+          usedCount: {
+            increment: 1,
+          },
+        },
+      });
+    }
 
     // 12. Hapus seluruh CartItem
     await tx.cartItem.deleteMany({

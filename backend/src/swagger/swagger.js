@@ -1821,6 +1821,180 @@ const swaggerSpec = {
         },
       },
     },
+    '/vouchers': {
+      get: {
+        summary: 'Get Vouchers',
+        description: 'Endpoint publik untuk melihat seluruh voucher diskon yang tersedia',
+        responses: {
+          200: {
+            description: 'Daftar voucher berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', example: 'uuid-voucher' },
+                          code: { type: 'string', example: 'SEAPEDIA10' },
+                          discount: { type: 'number', example: 10 },
+                          expiry: { type: 'string', example: '2026-12-31T23:59:59.000Z' },
+                          usageLimit: { type: 'integer', example: 100 },
+                          usedCount: { type: 'integer', example: 5 },
+                          createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                          updatedAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      post: {
+        summary: 'Create Voucher (ADMIN Only)',
+        description: 'Endpoint khusus ADMIN untuk membuat voucher baru',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  code: { type: 'string', example: 'SEAPEDIA10' },
+                  discount: { type: 'number', example: 10 },
+                  expiry: { type: 'string', example: '2026-12-31T23:59:59.000Z' },
+                  usageLimit: { type: 'integer', example: 100 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Voucher berhasil dibuat',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Voucher created successfully' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'uuid-voucher' },
+                        code: { type: 'string', example: 'SEAPEDIA10' },
+                        discount: { type: 'number', example: 10 },
+                        expiry: { type: 'string', example: '2026-12-31T23:59:59.000Z' },
+                        usageLimit: { type: 'integer', example: 100 },
+                        usedCount: { type: 'integer', example: 0 },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Bad Request / Kode voucher sudah ada / expiry di masa lalu' },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Not Admin)' },
+        },
+      },
+    },
+    '/promos': {
+      get: {
+        summary: 'Get Promos',
+        description: 'Endpoint publik untuk melihat seluruh promo toko yang tersedia',
+        responses: {
+          200: {
+            description: 'Daftar promo berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', example: 'uuid-promo' },
+                          name: { type: 'string', example: 'Promo Diskon Salmon' },
+                          discount: { type: 'number', example: 15 },
+                          expiry: { type: 'string', example: '2026-12-31T23:59:59.000Z' },
+                          storeId: { type: 'string', example: 'uuid-store' },
+                          createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                          updatedAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      post: {
+        summary: 'Create Promo (ADMIN Only)',
+        description: 'Endpoint khusus ADMIN untuk membuat promo toko baru',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string', example: 'Promo Diskon Salmon' },
+                  discount: { type: 'number', example: 15 },
+                  expiry: { type: 'string', example: '2026-12-31T23:59:59.000Z' },
+                  storeId: { type: 'string', example: 'uuid-store' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Promo berhasil dibuat',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Promo created successfully' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'uuid-promo' },
+                        name: { type: 'string', example: 'Promo Diskon Salmon' },
+                        discount: { type: 'number', example: 15 },
+                        expiry: { type: 'string', example: '2026-12-31T23:59:59.000Z' },
+                        storeId: { type: 'string', example: 'uuid-store' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Bad Request' },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Not Admin)' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

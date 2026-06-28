@@ -23,6 +23,7 @@ const cartRoute = require('./routes/cart.route');
 const orderRoute = require('./routes/order.route');
 const walletRoute = require('./routes/wallet.route');
 const reviewRoute = require('./routes/review.route');
+const { voucherRouter, promoRouter } = require('./routes/discount.route');
 app.use('/auth', authRoute);
 app.use('/store', storeRoute);
 app.use('/products', productRoute);
@@ -30,6 +31,8 @@ app.use('/cart', cartRoute);
 app.use('/orders', orderRoute);
 app.use('/wallet', walletRoute);
 app.use('/reviews', reviewRoute);
+app.use('/vouchers', voucherRouter);
+app.use('/promos', promoRouter);
 
 // Base Health Check Route
 app.get('/', (req, res) => {
