@@ -33,6 +33,7 @@ model User {
   store      Store?
   driverJobs DriverJob[]
   cart       Cart?
+  driverEarnings DriverEarning[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -179,6 +180,7 @@ model Order {
   
   orderItems   OrderItem[]
   driverJob    DriverJob?
+  driverEarning DriverEarning?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -253,6 +255,17 @@ model SellerIncome {
   storeId   String
   amount    Float
   store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model DriverEarning {
+  id        String   @id @default(uuid())
+  driverId  String
+  orderId   String   @unique
+  amount    Float
+  driver    User     @relation(fields: [driverId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 }

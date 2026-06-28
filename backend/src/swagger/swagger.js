@@ -1995,6 +1995,161 @@ const swaggerSpec = {
         },
       },
     },
+    '/driver/jobs/available': {
+      get: {
+        summary: 'Get Available Jobs (DRIVER Only)',
+        description: 'Endpoint khusus DRIVER untuk melihat daftar order dengan status MENUNGGU_PENGIRIM yang belum diambil oleh driver lain',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Daftar available jobs berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: { type: 'array', items: { type: 'object' } },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Driver)' },
+        },
+      },
+    },
+    '/driver/jobs/my': {
+      get: {
+        summary: 'Get My Jobs (DRIVER Only)',
+        description: 'Endpoint khusus DRIVER untuk melihat riwayat dan pekerjaan aktif milik driver',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Daftar my jobs berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: { type: 'array', items: { type: 'object' } },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Driver)' },
+        },
+      },
+    },
+    '/driver/jobs/{orderId}/take': {
+      post: {
+        summary: 'Take Job (DRIVER Only)',
+        description: 'Endpoint khusus DRIVER untuk mengambil pekerjaan pengiriman pesanan',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'orderId',
+            required: true,
+            schema: { type: 'string' },
+            description: 'ID Order yang ingin diambil',
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Pekerjaan berhasil diambil, status menjadi SEDANG_DIKIRIM',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Job taken successfully' },
+                    data: { type: 'object' },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Bad Request / Job has already been taken by another driver' },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Driver)' },
+          404: { description: 'Order not found' },
+        },
+      },
+    },
+    '/driver/jobs/{jobId}/complete': {
+      put: {
+        summary: 'Complete Job (DRIVER Only)',
+        description: 'Endpoint khusus DRIVER untuk mengonfirmasi bahwa pengiriman telah selesai dan menerima earning',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'jobId',
+            required: true,
+            schema: { type: 'string' },
+            description: 'ID DriverJob yang telah selesai',
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Pekerjaan berhasil diselesaikan, status menjadi SELESAI, earning dicatat',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Job completed successfully' },
+                    data: { type: 'object' },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Bad Request / Job is already completed' },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden / Unauthorized to complete this job' },
+          404: { description: 'Job not found' },
+        },
+      },
+    },
+    '/driver/earnings': {
+      get: {
+        summary: 'Get My Earnings (DRIVER Only)',
+        description: 'Endpoint khusus DRIVER untuk melihat total akumulasi penghasilan dan riwayat earning',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Total earning berhasil diambil',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        total: { type: 'number', example: 50000 },
+                        history: { type: 'array', items: { type: 'object' } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Driver)' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

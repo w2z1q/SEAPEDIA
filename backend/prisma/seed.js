@@ -24,6 +24,19 @@ async function main() {
   });
 
   console.log('✅ Admin user ready:', admin.email);
+
+  const driver = await prisma.user.upsert({
+    where: { email: 'driver@seapedia.com' },
+    update: {},
+    create: {
+      email: 'driver@seapedia.com',
+      name: 'Driver Seapedia',
+      password: await bcrypt.hash('DriverSecure123!', 10),
+      activeRole: 'DRIVER',
+      roles: { create: { role: 'DRIVER' } }
+    }
+  });
+  console.log('✅ Driver user ready:', driver.email);
 }
 
 main()
