@@ -12,5 +12,6 @@ router.get('/users', adminController.getUsers);
 router.get('/stores', adminController.getStores);
 router.get('/orders', adminController.getOrders);
 router.get('/driver-jobs', adminController.getDriverJobs);
+router.post('/overdue/check', adminController.checkOverdue);
 
 module.exports = router;

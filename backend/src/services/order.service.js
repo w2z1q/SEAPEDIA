@@ -102,6 +102,7 @@ const checkout = async (userId, data = {}) => {
         addressId: address.id,
         voucherId: voucher ? voucher.id : null,
         promoId: promo ? promo.id : null,
+        deliveryMethod: data.deliveryMethod || 'REGULAR',
         status: 'SEDANG_DIKEMAS',
         subtotal,
         shippingCost: deliveryFee,

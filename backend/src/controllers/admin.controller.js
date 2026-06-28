@@ -1,4 +1,5 @@
 const adminService = require('../services/admin.service');
+const overdueService = require('../services/overdue.service');
 
 const getStats = async (req, res) => {
   try {
@@ -70,10 +71,26 @@ const getDriverJobs = async (req, res) => {
   }
 };
 
+const checkOverdue = async (req, res) => {
+  try {
+    const result = await overdueService.checkOverdueOrders();
+
+    res.status(200).json({
+      success: true,
+      message: 'Overdue orders checked successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error checking overdue orders:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getStats,
   getUsers,
   getStores,
   getOrders,
   getDriverJobs,
+  checkOverdue,
 };

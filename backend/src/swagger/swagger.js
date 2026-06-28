@@ -2292,6 +2292,38 @@ const swaggerSpec = {
         },
       },
     },
+    '/admin/overdue/check': {
+      post: {
+        summary: 'Check Overdue Orders (ADMIN Only)',
+        description: 'Endpoint khusus ADMIN untuk memeriksa pesanan yang terlambat (overdue) melebihi batas SLA pengiriman, mengubah statusnya menjadi DIKEMBALIKAN, mengembalikan dana (refund) ke wallet pembeli, dan merestore stock produk',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Pemeriksaan pesanan overdue berhasil dieksekusi',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Overdue orders checked successfully' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        totalProcessed: { type: 'integer', example: 1 },
+                        processedOrders: { type: 'array', items: { type: 'object' } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden (Bukan Admin)' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

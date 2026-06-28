@@ -156,6 +156,7 @@ enum OrderStatus {
   SELESAI
   DIBATALKAN
   REFUND
+  DIKEMBALIKAN
 }
 
 model Order {
@@ -165,6 +166,7 @@ model Order {
   addressId    String
   voucherId    String?
   promoId      String?
+  deliveryMethod String @default("REGULAR")
   status       OrderStatus @default(SEDANG_DIKEMAS)
   subtotal     Float
   shippingCost Float
