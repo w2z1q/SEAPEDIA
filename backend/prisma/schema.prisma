@@ -1,0 +1,258 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum RoleType {
+  BUYER
+  SELLER
+  DRIVER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  
+  activeRole RoleType @default(BUYER)
+  roles      UserRole[]
+  wallet     Wallet?
+  addresses  Address[]
+  reviews    Review[]
+  orders     Order[]
+  store      Store?
+  driverJobs DriverJob[]
+  cart       Cart?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String
+  role      RoleType
+  user      User     @relation(fields: [userId], references: [id])
+  
+  @@unique([userId, role])
+}
+
+model Store {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  sellerId  String   @unique
+  seller    User     @relation(fields: [sellerId], references: [id])
+  
+  products  Product[]
+  promos    Promo[]
+  incomes   SellerIncome[]
+  carts     Cart[]
+  orders    Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  price       Float
+  stock       Int
+  description String
+  image       String?
+  storeId     String
+  store       Store    @relation(fields: [storeId], references: [id])
+  
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  reviews     Review[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Wallet {
+  id        String   @id @default(uuid())
+  balance   Float    @default(0)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+
+  transactions WalletTransaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum TransactionType {
+  TOPUP
+  PAYMENT
+  REFUND
+}
+
+model WalletTransaction {
+  id          String   @id @default(uuid())
+  walletId    String
+  amount      Float
+  description String?
+  type        TransactionType
+  wallet      Wallet   @relation(fields: [walletId], references: [id])
+
+  createdAt   DateTime @default(now())
+}
+
+model Address {
+  id        String   @id @default(uuid())
+  userId    String
+  address   String
+  city      String
+  zipCode   String
+  user      User     @relation(fields: [userId], references: [id])
+  orders    Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  storeId   String?
+  store     Store?   @relation(fields: [storeId], references: [id])
+  
+  cartItems CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  productId String
+  quantity  Int
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  SEDANG_DIKEMAS
+  MENUNGGU_PENGIRIM
+  SEDANG_DIKIRIM
+  SELESAI
+  DIBATALKAN
+  REFUND
+}
+
+model Order {
+  id           String   @id @default(uuid())
+  userId       String
+  storeId      String
+  addressId    String
+  voucherId    String?
+  promoId      String?
+  status       OrderStatus @default(SEDANG_DIKEMAS)
+  subtotal     Float
+  shippingCost Float
+  tax          Float
+  discount     Float
+  total        Float
+  
+  user         User     @relation(fields: [userId], references: [id])
+  store        Store    @relation(fields: [storeId], references: [id])
+  address      Address  @relation(fields: [addressId], references: [id])
+  voucher      Voucher? @relation(fields: [voucherId], references: [id])
+  promo        Promo?   @relation(fields: [promoId], references: [id])
+  
+  orderItems   OrderItem[]
+  driverJob    DriverJob?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Voucher {
+  id         String   @id @default(uuid())
+  code       String   @unique
+  discount   Float
+  expiry     DateTime
+  usageLimit Int
+  usedCount  Int      @default(0)
+  orders     Order[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Promo {
+  id        String   @id @default(uuid())
+  storeId   String
+  name      String
+  discount  Float
+  expiry    DateTime
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orders    Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  content   String
+  rating    Int
+  userId    String?  
+  guestName String?
+  user      User?    @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DriverJob {
+  id        String   @id @default(uuid())
+  orderId   String   @unique
+  driverId  String
+  driver    User     @relation(fields: [driverId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SellerIncome {
+  id        String   @id @default(uuid())
+  storeId   String
+  amount    Float
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
