@@ -669,6 +669,186 @@ const swaggerSpec = {
         },
       },
     },
+    '/products': {
+      post: {
+        summary: 'Create Product',
+        description: 'Endpoint untuk Seller membuat produk baru',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string', example: 'Fresh Salmon' },
+                  description: { type: 'string', example: 'Fresh Norwegian Salmon' },
+                  price: { type: 'number', example: 120000 },
+                  stock: { type: 'number', example: 20 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Product created successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Product created successfully' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'uuid' },
+                        name: { type: 'string', example: 'Fresh Salmon' },
+                        price: { type: 'number', example: 120000 },
+                        stock: { type: 'number', example: 20 },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Validation Error' },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+        },
+      },
+    },
+    '/products/me': {
+      get: {
+        summary: 'Get My Products',
+        description: 'Endpoint untuk mendapatkan daftar produk milik seller',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Success retrieve products',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', example: 'uuid' },
+                          name: { type: 'string', example: 'Fresh Salmon' },
+                          price: { type: 'number', example: 120000 },
+                          stock: { type: 'number', example: 20 },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Store not found' },
+        },
+      },
+    },
+    '/products/{id}': {
+      get: {
+        summary: 'Get Product Details',
+        description: 'Endpoint untuk mendapatkan detail produk milik seller',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' },
+            description: 'Product ID',
+          },
+        ],
+        responses: {
+          200: { description: 'Success retrieve product' },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Product not found' },
+        },
+      },
+      put: {
+        summary: 'Update Product',
+        description: 'Endpoint untuk mengupdate produk milik seller',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' },
+            description: 'Product ID',
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string', example: 'Fresh Salmon' },
+                  description: { type: 'string', example: 'Fresh Norwegian Salmon' },
+                  price: { type: 'number', example: 120000 },
+                  stock: { type: 'number', example: 20 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Product updated successfully' },
+          400: { description: 'Validation Error' },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Product not found' },
+        },
+      },
+      delete: {
+        summary: 'Delete Product',
+        description: 'Endpoint untuk menghapus produk milik seller',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' },
+            description: 'Product ID',
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Product deleted successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Product deleted successfully' },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Product not found' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {
