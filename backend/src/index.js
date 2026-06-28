@@ -19,9 +19,11 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 const authRoute = require('./routes/auth.route');
 const storeRoute = require('./routes/store.route');
 const productRoute = require('./routes/product.route');
+const cartRoute = require('./routes/cart.route');
 app.use('/auth', authRoute);
 app.use('/store', storeRoute);
 app.use('/products', productRoute);
+app.use('/cart', cartRoute);
 
 // Base Health Check Route
 app.get('/', (req, res) => {

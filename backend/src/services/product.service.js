@@ -1,5 +1,16 @@
 const { PrismaClient } = require('@prisma/client');
+const crypto = require('crypto');
+const path = require('path');
+const supabase = require('../utils/supabase');
+
 const prisma = new PrismaClient();
+
+const formatProduct = (product) => {
+  if (!product) return product;
+  const formatted = { ...product, imageUrl: product.image };
+  delete formatted.image;
+  return formatted;
+};
 
 const getSellerStore = async (sellerId) => {
   const store = await prisma.store.findUnique({
@@ -39,7 +50,7 @@ const createProduct = async (sellerId, data) => {
     }
   });
 
-  return product;
+  return formatProduct(product);
 };
 
 const getMyProducts = async (sellerId) => {
@@ -50,14 +61,14 @@ const getMyProducts = async (sellerId) => {
     orderBy: { createdAt: 'desc' },
   });
 
-  return products;
+  return products.map(formatProduct);
 };
 
 const getProductById = async (sellerId, productId) => {
   const store = await getSellerStore(sellerId);
   const product = await findOwnedProduct(store.id, productId);
 
-  return product;
+  return formatProduct(product);
 };
 
 const updateProduct = async (sellerId, productId, data) => {
@@ -69,7 +80,7 @@ const updateProduct = async (sellerId, productId, data) => {
     data,
   });
 
-  return updatedProduct;
+  return formatProduct(updatedProduct);
 };
 
 const deleteProduct = async (sellerId, productId) => {
@@ -117,7 +128,7 @@ const getAllProducts = async (filters) => {
   ]);
 
   return {
-    data: products,
+    data: products.map(formatProduct),
     pagination: {
       page,
       limit,
@@ -146,7 +157,40 @@ const getProductDetail = async (productId) => {
     throw error;
   }
 
-  return product;
+  return formatProduct(product);
+};
+
+const uploadProductImage = async (sellerId, productId, file) => {
+  const store = await getSellerStore(sellerId);
+  await findOwnedProduct(store.id, productId);
+
+  const extension = path.extname(file.originalname);
+  const filename = `${productId}-${crypto.randomUUID()}${extension}`;
+
+  const { data, error } = await supabase.storage
+    .from('products')
+    .upload(filename, file.buffer, {
+      contentType: file.mimetype,
+      upsert: true
+    });
+
+  if (error) {
+    console.error('Supabase upload error:', error);
+    const uploadError = new Error('Failed to upload image');
+    uploadError.status = 500;
+    throw uploadError;
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from('products')
+    .getPublicUrl(filename);
+
+  const updatedProduct = await prisma.product.update({
+    where: { id: productId },
+    data: { image: publicUrlData.publicUrl },
+  });
+
+  return formatProduct(updatedProduct);
 };
 
 module.exports = {
@@ -157,4 +201,5 @@ module.exports = {
   deleteProduct,
   getAllProducts,
   getProductDetail,
+  uploadProductImage,
 };

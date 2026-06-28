@@ -712,6 +712,7 @@ const swaggerSpec = {
                           description: { type: 'string', example: 'Fresh Norwegian Salmon' },
                           price: { type: 'number', example: 120000 },
                           stock: { type: 'number', example: 20 },
+                          imageUrl: { type: 'string', example: 'https://xxxx.supabase.co/storage/v1/object/public/products/...' },
                           store: {
                             type: 'object',
                             properties: {
@@ -811,6 +812,7 @@ const swaggerSpec = {
                           name: { type: 'string', example: 'Fresh Salmon' },
                           price: { type: 'number', example: 120000 },
                           stock: { type: 'number', example: 20 },
+                          imageUrl: { type: 'string', example: 'https://xxxx.supabase.co/storage/v1/object/public/products/...' },
                         },
                       },
                     },
@@ -855,6 +857,7 @@ const swaggerSpec = {
                         description: { type: 'string', example: 'Fresh Norwegian Salmon' },
                         price: { type: 'number', example: 120000 },
                         stock: { type: 'number', example: 20 },
+                        imageUrl: { type: 'string', example: 'https://xxxx.supabase.co/storage/v1/object/public/products/...' },
                         store: {
                           type: 'object',
                           properties: {
@@ -940,6 +943,308 @@ const swaggerSpec = {
           401: { description: 'Unauthorized' },
           403: { description: 'Forbidden' },
           404: { description: 'Product not found' },
+        },
+      },
+    },
+    '/products/{id}/image': {
+      post: {
+        summary: 'Upload Product Image',
+        description: 'Endpoint untuk seller mengupload gambar produk ke Supabase Storage',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' },
+            description: 'Product ID',
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'multipart/form-data': {
+              schema: {
+                type: 'object',
+                properties: {
+                  image: {
+                    type: 'string',
+                    format: 'binary',
+                    description: 'Image file (jpg, jpeg, png, webp)',
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Image uploaded successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Image uploaded successfully' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'uuid' },
+                        imageUrl: { type: 'string', example: 'https://xxxx.supabase.co/storage/v1/object/public/products/...' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Bad Request / Validation Error / File > 5MB' },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Product not found / Not owned by seller' },
+        },
+      },
+    },
+    '/cart': {
+      get: {
+        summary: 'Get My Cart',
+        description: 'Endpoint untuk Buyer melihat isi keranjang belanjanya beserta kalkulasi summary',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'Success retrieve cart items and summary',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        items: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              id: { type: 'string', example: 'cart-item-id' },
+                              quantity: { type: 'integer', example: 2 },
+                              subtotal: { type: 'number', example: 240000 },
+                              product: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string', example: 'product-id' },
+                                  name: { type: 'string', example: 'Fresh Salmon' },
+                                  price: { type: 'number', example: 120000 },
+                                  imageUrl: { type: 'string', example: 'https://xxxxx.supabase.co/storage/v1/object/public/products/salmon.jpg' },
+                                  storeId: { type: 'string', example: 'store-id' },
+                                },
+                              },
+                            },
+                          },
+                        },
+                        summary: {
+                          type: 'object',
+                          properties: {
+                            totalItems: { type: 'integer', example: 1 },
+                            totalQuantity: { type: 'integer', example: 2 },
+                            totalPrice: { type: 'number', example: 240000 },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+        },
+      },
+      post: {
+        summary: 'Add to Cart / Update Quantity',
+        description: 'Endpoint untuk Buyer menambahkan produk ke keranjang belanja atau mengupdate kuantitas jika sudah ada',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  productId: { type: 'string', example: 'product-id' },
+                  quantity: { type: 'integer', example: 2 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Item added to cart successfully (new item)',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'cart-item-id' },
+                        quantity: { type: 'integer', example: 2 },
+                        subtotal: { type: 'number', example: 240000 },
+                        product: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string', example: 'product-id' },
+                            name: { type: 'string', example: 'Fresh Salmon' },
+                            price: { type: 'number', example: 120000 },
+                            imageUrl: { type: 'string', example: 'https://xxxxx.supabase.co/storage/v1/object/public/products/salmon.jpg' },
+                            storeId: { type: 'string', example: 'store-id' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          200: {
+            description: 'Item quantity updated successfully (existing item)',
+          },
+          400: {
+            description: 'Bad Request / Insufficient stock',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: false },
+                    message: { type: 'string', example: 'Insufficient stock' },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Product not found' },
+        },
+      },
+    },
+    '/cart/{id}': {
+      put: {
+        summary: 'Update Cart Item Quantity',
+        description: 'Endpoint untuk Buyer mengupdate kuantitas item di keranjangnya',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' },
+            description: 'Cart Item ID',
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  quantity: { type: 'integer', example: 5 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Cart item updated successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        id: { type: 'string', example: 'cart-item-id' },
+                        quantity: { type: 'integer', example: 5 },
+                        subtotal: { type: 'number', example: 600000 },
+                        product: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string', example: 'product-id' },
+                            name: { type: 'string', example: 'Fresh Salmon' },
+                            price: { type: 'number', example: 120000 },
+                            imageUrl: { type: 'string', example: 'https://xxxxx.supabase.co/storage/v1/object/public/products/salmon.jpg' },
+                            storeId: { type: 'string', example: 'store-id' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Bad Request / Insufficient stock',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: false },
+                    message: { type: 'string', example: 'Insufficient stock' },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Cart item not found' },
+        },
+      },
+      delete: {
+        summary: 'Delete Cart Item',
+        description: 'Endpoint untuk Buyer menghapus item dari keranjang belanjanya',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: { type: 'string' },
+            description: 'Cart Item ID',
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Cart item deleted successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Cart item deleted successfully' },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Cart item not found' },
         },
       },
     },

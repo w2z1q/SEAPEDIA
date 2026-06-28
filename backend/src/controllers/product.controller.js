@@ -128,6 +128,28 @@ const getPublicProductById = async (req, res) => {
   }
 };
 
+const uploadImage = async (req, res) => {
+  try {
+    const sellerId = req.user.id;
+    const productId = req.params.id;
+    const file = req.file;
+
+    const product = await productService.uploadProductImage(sellerId, productId, file);
+
+    res.status(200).json({
+      success: true,
+      message: 'Image uploaded successfully',
+      data: product
+    });
+  } catch (error) {
+    if (error.status === 404) {
+      return res.status(404).json({ success: false, message: error.message });
+    }
+    console.error('Error uploading product image:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createProduct,
   getMyProducts,
@@ -136,4 +158,5 @@ module.exports = {
   deleteProduct,
   getProducts,
   getPublicProductById,
+  uploadImage,
 };
