@@ -1248,6 +1248,88 @@ const swaggerSpec = {
         },
       },
     },
+    '/orders/checkout': {
+      post: {
+        summary: 'Checkout Cart to Order',
+        description: 'Endpoint untuk Buyer melakukan checkout seluruh isi keranjang menjadi Order beserta OrderItems, sekaligus mengurangi stok produk secara atomik.',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          201: {
+            description: 'Checkout berhasil dan Order dibuat',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        order: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string', example: 'uuid-order' },
+                            userId: { type: 'string', example: 'uuid-user' },
+                            storeId: { type: 'string', example: 'uuid-store' },
+                            addressId: { type: 'string', example: 'uuid-address' },
+                            status: { type: 'string', example: 'SEDANG_DIKEMAS' },
+                            subtotal: { type: 'number', example: 240000 },
+                            shippingCost: { type: 'number', example: 0 },
+                            tax: { type: 'number', example: 0 },
+                            discount: { type: 'number', example: 0 },
+                            total: { type: 'number', example: 240000 },
+                            createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                          },
+                        },
+                        items: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              id: { type: 'string', example: 'uuid-order-item' },
+                              orderId: { type: 'string', example: 'uuid-order' },
+                              productId: { type: 'string', example: 'uuid-product' },
+                              quantity: { type: 'integer', example: 2 },
+                              price: { type: 'number', example: 120000 },
+                              product: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string', example: 'uuid-product' },
+                                  name: { type: 'string', example: 'Fresh Salmon' },
+                                  price: { type: 'number', example: 120000 },
+                                  imageUrl: { type: 'string', example: 'https://xxxxx.supabase.co/storage/v1/object/public/products/salmon.jpg' },
+                                  storeId: { type: 'string', example: 'uuid-store' },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Cart kosong / Stock tidak cukup',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: false },
+                    message: { type: 'string', example: 'Cart is empty / Insufficient stock for product: Fresh Salmon' },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

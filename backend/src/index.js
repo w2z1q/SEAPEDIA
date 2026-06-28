@@ -20,10 +20,12 @@ const authRoute = require('./routes/auth.route');
 const storeRoute = require('./routes/store.route');
 const productRoute = require('./routes/product.route');
 const cartRoute = require('./routes/cart.route');
+const orderRoute = require('./routes/order.route');
 app.use('/auth', authRoute);
 app.use('/store', storeRoute);
 app.use('/products', productRoute);
 app.use('/cart', cartRoute);
+app.use('/orders', orderRoute);
 
 // Base Health Check Route
 app.get('/', (req, res) => {
