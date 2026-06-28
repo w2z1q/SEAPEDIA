@@ -29,7 +29,7 @@ const calculateOrderTotal = (items) => {
   }, 0);
 };
 
-const checkout = async (userId) => {
+const checkout = async (userId, data = {}) => {
   return await prisma.$transaction(async (tx) => {
     // 1. Ambil cart beserta item & 2. Validasi cart tidak kosong
     const cart = await getCartWithItems(userId, tx);
@@ -62,10 +62,24 @@ const checkout = async (userId) => {
     // 5. Ambil storeId dari produk pertama
     const storeId = cart.cartItems[0].product.storeId;
 
-    // 6. Hitung subtotal dan total
+    // 6. Hitung subtotal, deliveryFee, tax, total
     const subtotal = calculateOrderTotal(cart.cartItems);
+    const deliveryFee = data.deliveryMethod === 'INSTANT' ? 25000 : data.deliveryMethod === 'NEXT_DAY' ? 15000 : 10000;
+    const tax = (subtotal + deliveryFee) * 0.12;
+    const total = subtotal + deliveryFee + tax;
 
-    // 7. Buat Order & 8. Buat seluruh OrderItem
+    // 7. Cek wallet buyer cukup -> throw 400 Insufficient wallet balance kalau kurang
+    const wallet = await tx.wallet.findUnique({
+      where: { userId },
+    });
+
+    if (!wallet || wallet.balance < total) {
+      const error = new Error('Insufficient wallet balance');
+      error.status = 400;
+      throw error;
+    }
+
+    // 8. Buat Order & 9. Buat seluruh OrderItem
     const order = await tx.order.create({
       data: {
         userId,
@@ -73,10 +87,10 @@ const checkout = async (userId) => {
         addressId: address.id,
         status: 'SEDANG_DIKEMAS',
         subtotal,
-        shippingCost: 0,
-        tax: 0,
+        shippingCost: deliveryFee,
+        tax,
         discount: 0,
-        total: subtotal,
+        total,
         orderItems: {
           create: cart.cartItems.map((item) => ({
             productId: item.productId,
@@ -102,7 +116,7 @@ const checkout = async (userId) => {
       },
     });
 
-    // 9. Kurangi stock setiap produk
+    // 10. Kurangi stock setiap produk
     for (const item of cart.cartItems) {
       await tx.product.update({
         where: { id: item.productId },
@@ -112,12 +126,31 @@ const checkout = async (userId) => {
       });
     }
 
-    // 10. Hapus seluruh CartItem
+    // 11. Kurangi wallet buyer + catat WalletTransaction type PAYMENT
+    await tx.wallet.update({
+      where: { userId },
+      data: {
+        balance: {
+          decrement: total,
+        },
+      },
+    });
+
+    await tx.walletTransaction.create({
+      data: {
+        walletId: wallet.id,
+        amount: total,
+        type: 'PAYMENT',
+        description: `Payment for order ${order.id}`,
+      },
+    });
+
+    // 12. Hapus seluruh CartItem
     await tx.cartItem.deleteMany({
       where: { cartId: cart.id },
     });
 
-    // 11. Return Order beserta OrderItems
+    // 13. Return Order beserta OrderItems
     // Menyesuaikan format image -> imageUrl pada relasi product di orderItems agar konsisten
     const formattedOrder = {
       ...order,

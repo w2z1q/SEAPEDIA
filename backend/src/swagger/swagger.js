@@ -1644,6 +1644,90 @@ const swaggerSpec = {
         },
       },
     },
+    '/orders/checkout': {
+      post: {
+        summary: 'Checkout Order',
+        description: 'Endpoint untuk Buyer melakukan checkout pesanan dengan metode pengiriman dan pemotongan saldo dompet digital (wallet)',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  deliveryMethod: { type: 'string', example: 'INSTANT' },
+                  voucherId: { type: 'string', example: 'uuid-voucher' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Order berhasil dibuat dan saldo wallet berhasil dipotong',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        order: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string', example: 'uuid-order' },
+                            userId: { type: 'string', example: 'uuid-user' },
+                            storeId: { type: 'string', example: 'uuid-store' },
+                            addressId: { type: 'string', example: 'uuid-address' },
+                            status: { type: 'string', example: 'SEDANG_DIKEMAS' },
+                            subtotal: { type: 'number', example: 200000 },
+                            shippingCost: { type: 'number', example: 25000 },
+                            tax: { type: 'number', example: 27000 },
+                            total: { type: 'number', example: 252000 },
+                            createdAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                            updatedAt: { type: 'string', example: '2026-06-28T12:00:00.000Z' },
+                          },
+                        },
+                        items: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              id: { type: 'string', example: 'uuid-order-item' },
+                              productId: { type: 'string', example: 'uuid-product' },
+                              quantity: { type: 'integer', example: 2 },
+                              price: { type: 'number', example: 100000 },
+                              product: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string', example: 'uuid-product' },
+                                  name: { type: 'string', example: 'Fresh Salmon' },
+                                  price: { type: 'number', example: 100000 },
+                                  imageUrl: { type: 'string', example: 'https://xxxxx.supabase.co/storage/v1/object/public/products/salmon.jpg' },
+                                  storeId: { type: 'string', example: 'uuid-store' },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'Bad Request / Insufficient wallet balance / Cart is empty / deliveryMethod invalid',
+          },
+          401: { description: 'Unauthorized' },
+          403: { description: 'Forbidden' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

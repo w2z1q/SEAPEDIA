@@ -20,6 +20,29 @@ const validateUpdateOrderStatus = (req, res, next) => {
   next();
 };
 
+const VALID_DELIVERY_METHODS = ['INSTANT', 'NEXT_DAY', 'REGULAR'];
+
+const validateCheckout = (req, res, next) => {
+  const { deliveryMethod } = req.body;
+
+  if (!deliveryMethod || typeof deliveryMethod !== 'string') {
+    return res.status(400).json({
+      success: false,
+      message: 'deliveryMethod is required and must be a string',
+    });
+  }
+
+  if (!VALID_DELIVERY_METHODS.includes(deliveryMethod)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid deliveryMethod. Allowed values: INSTANT, NEXT_DAY, REGULAR',
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   validateUpdateOrderStatus,
+  validateCheckout,
 };

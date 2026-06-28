@@ -9,7 +9,7 @@ const router = express.Router();
 router.use(verifyToken);
 
 // BUYER only - Checkout
-router.post('/checkout', authorize('BUYER'), orderController.checkout);
+router.post('/checkout', authorize('BUYER'), orderValidator.validateCheckout, orderController.checkout);
 
 // SELLER only - Daftar pesanan toko (Statik, diletakkan sebelum rute dinamis /:id)
 router.get('/seller', authorize('SELLER'), orderController.getSellerOrders);
