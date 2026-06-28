@@ -372,6 +372,59 @@ const swaggerSpec = {
         },
       },
     },
+    '/auth/logout': {
+      post: {
+        summary: 'Logout User',
+        description: 'Endpoint untuk melakukan logout',
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Logout successful',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: true,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Logout successful',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          401: {
+            description: 'Unauthorized',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'boolean',
+                      example: false,
+                    },
+                    message: {
+                      type: 'string',
+                      example: 'Unauthorized: Missing or invalid token format',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {

@@ -109,8 +109,15 @@ const getProfile = async (userId) => {
   };
 };
 
+const logoutUser = async () => {
+  // Stateless JWT logout - we just return success.
+  // The client is responsible for deleting the token.
+  return { success: true };
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getProfile,
+  logoutUser,
 };

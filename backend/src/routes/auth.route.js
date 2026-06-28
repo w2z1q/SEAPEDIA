@@ -9,5 +9,6 @@ router.get('/test', authController.test);
 router.post('/register', authValidator.validateRegister, authController.register);
 router.post('/login', authValidator.validateLogin, authController.login);
 router.get('/profile', verifyToken, authController.profile);
+router.post('/logout', verifyToken, authController.logout);
 
 module.exports = router;
