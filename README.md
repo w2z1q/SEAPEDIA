@@ -98,7 +98,7 @@ Urutan kalkulasi biaya pada saat checkout dilakukan di sisi backend secara mutla
 1. **Subtotal** = Total perkalian harga × kuantitas (quantity) seluruh item di dalam keranjang.
 2. **Diskon** = Potongan harga yang diperoleh dari Voucher atau Promo yang tervalidasi (jika ada).
 3. **Delivery Fee** = Biaya pengiriman berdasarkan metode pengiriman yang dipilih.
-4. **PPN (12%)** = Pajak Pertambahan Nilai sebesar 12%, dihitung secara akurat dari nilai **`(Subtotal - Diskon)`**.
+4. **PPN (12%)** = Pajak Pertambahan Nilai sebesar 12%, dihitung secara akurat dari nilai **`(Subtotal - Diskon + Delivery Fee)`**.
 5. **Total Tagihan** = `Subtotal - Diskon + Delivery Fee + PPN`.
 
 **Tarif Pengiriman (Delivery Fee):**
@@ -107,7 +107,7 @@ Urutan kalkulasi biaya pada saat checkout dilakukan di sisi backend secara mutla
 - 🚛 **Regular**: Rp 10.000
 
 ### 🚚 4. Driver Earning Rule
-Setiap kali pesanan berhasil diantarkan dan diselesaikan, Kurir (Driver) berhak mendapatkan komisi penghasilan sebesar **80% dari total Delivery Fee** pesanan tersebut.
+Setiap kali pesanan berhasil diantarkan dan diselesaikan, Kurir (Driver) berhak mendapatkan komisi penghasilan sebesar **100% dari total Delivery Fee** pesanan tersebut.
 
 ### ⏱️ 5. Overdue SLA (Service Level Agreement)
 Sistem memantau durasi keterlambatan pengiriman pesanan sejak pertama kali dibuat berdasarkan batas SLA berikut:

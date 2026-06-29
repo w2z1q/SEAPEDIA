@@ -62,6 +62,19 @@ const processOverdueOrder = async (orderId) => {
       });
     }
 
+    // 3b. Reverse Seller Income (Level 6: Jika overdue — Seller income yang sudah tercatat harus di-reverse)
+    const existingReversal = await tx.sellerIncome.findFirst({
+      where: { storeId: order.storeId, amount: -order.total },
+    });
+    if (!existingReversal) {
+      await tx.sellerIncome.create({
+        data: {
+          storeId: order.storeId,
+          amount: -order.total,
+        },
+      });
+    }
+
     // 4. Return hasil
     return updatedOrder;
   });
