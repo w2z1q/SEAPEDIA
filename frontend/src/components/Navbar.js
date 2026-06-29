@@ -32,9 +32,12 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-          <div className="w-9 h-9 rounded-lg bg-[#0369A1] flex items-center justify-center group-hover:bg-[#075985] transition-colors">
-            <ShoppingBag className="w-5 h-5 text-white" />
-          </div>
+          <img 
+            src="/logo.png" 
+            onError={(e) => { e.target.onerror = null; e.target.src = '/hasil-laut.jpeg'; }} 
+            alt="Seapedia Logo" 
+            className="w-9 h-9 rounded-lg object-cover border border-[#E2E8F0] group-hover:opacity-90 transition-opacity shadow-sm" 
+          />
           <span className="text-lg font-semibold tracking-tight text-[#0F172A]">
             SEAPEDIA
           </span>
