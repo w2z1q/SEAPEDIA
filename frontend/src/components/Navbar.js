@@ -84,13 +84,13 @@ export default function Navbar() {
           {user ? (
             <div className="flex items-center gap-3">
               {/* Role selector */}
-              <div className="hidden sm:flex items-center gap-2 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg py-1.5 px-3">
+              <div className="hidden sm:flex items-center">
                 {user.roles && user.roles.length > 1 ? (
                   <select
                     value={user.activeRole || 'BUYER'}
                     onChange={(e) => handleRoleSwitch(e.target.value)}
                     disabled={switching}
-                    className="bg-[#0369A1] text-white text-xs font-medium rounded-md py-1 px-2.5 border-none focus:ring-2 focus:ring-[#0369A1]/40 outline-none cursor-pointer disabled:opacity-50"
+                    className="bg-[#0369A1] text-white text-xs font-medium rounded-lg py-1.5 px-3 border-none focus:ring-2 focus:ring-[#0369A1]/40 outline-none cursor-pointer disabled:opacity-50 shadow-sm"
                   >
                     {user.roles.map((r) => (
                       <option key={r} value={r}>
@@ -99,7 +99,7 @@ export default function Navbar() {
                     ))}
                   </select>
                 ) : (
-                  <span className="bg-[#0369A1] text-white text-xs font-medium rounded-md py-1 px-2.5">
+                  <span className="bg-[#0369A1] text-white text-xs font-medium rounded-lg py-1.5 px-3 shadow-sm">
                     {(user.activeRole || user.role || 'BUYER') === 'BUYER'
                       ? user.name || 'Pembeli'
                       : translateRole(user.activeRole || user.role)}

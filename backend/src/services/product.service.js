@@ -103,10 +103,10 @@ const getAllProducts = async (filters) => {
   const where = {};
 
   if (filters.search) {
-    where.name = {
-      contains: filters.search,
-      mode: 'insensitive'
-    };
+    where.OR = [
+      { name: { contains: filters.search, mode: 'insensitive' } },
+      { description: { contains: filters.search, mode: 'insensitive' } }
+    ];
   }
 
   const [total, products] = await Promise.all([

@@ -155,11 +155,7 @@ export default function AdminDashboardPage() {
           {/* Header & Master Stats Banner */}
           <div className="flex flex-wrap items-center justify-between border-b border-[#E2E8F0] pb-6 gap-4">
             <div>
-              <div className="flex items-center gap-2 text-[#0369A1] text-xs font-medium uppercase tracking-tight">
-                <Shield className="w-4 h-4" />
-                <span>Admin Executive Command Center</span>
-              </div>
-              <h1 className="text-2xl font-semibold text-[#0F172A] mt-1 tracking-tight">Portal Pemantauan & Manajemen Platform</h1>
+              <h1 className="text-2xl font-semibold text-[#0F172A] tracking-tight">Portal Pemantauan & Manajemen Platform</h1>
             </div>
             <Button variant="ghost" size="sm" onClick={fetchAdminData} className="flex items-center gap-2">
               <RefreshCw className="w-4 h-4" />

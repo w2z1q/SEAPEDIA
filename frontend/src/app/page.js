@@ -5,7 +5,7 @@ import api from '../lib/axios';
 import ProductCard from '../components/ProductCard';
 import Input from '../components/Input';
 import { useAuth } from '../lib/AuthContext';
-import { Search, Star, Send } from 'lucide-react';
+import { Search, Star, Send, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDate } from '../lib/utils';
 
 export default function Home() {
@@ -21,24 +21,41 @@ export default function Home() {
   const [addingId, setAddingId] = useState(null);
   const [notification, setNotification] = useState('');
   const [reviews, setReviews] = useState(defaultReviews);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchProducts();
     const storedReviews = JSON.parse(localStorage.getItem('seapedia_reviews') || '[]');
     if (storedReviews.length > 0) {
       setReviews([...storedReviews, ...defaultReviews]);
     }
   }, []);
 
-  const fetchProducts = async () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchProducts(currentPage, search);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [currentPage, search]);
+
+  const fetchProducts = async (page = 1, searchQuery = '') => {
     try {
       setLoading(true);
-      const res = await api.get('/products');
+      const res = await api.get('/products', {
+        params: { page, limit: 12, search: searchQuery }
+      });
       if (res.data && res.data.data) {
         setProducts(res.data.data);
+        if (res.data.pagination) {
+          setTotalPages(res.data.pagination.totalPages);
+          setTotalProducts(res.data.pagination.total);
+        }
       } else if (Array.isArray(res.data)) {
         setProducts(res.data);
+        setTotalPages(1);
+        setTotalProducts(res.data.length);
       }
     } catch (error) {
       console.error('Failed to fetch products:', error);
@@ -105,7 +122,7 @@ export default function Home() {
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
               <input
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
                 placeholder="Cari produk kelautan..."
                 className="w-full rounded-lg bg-white border-none py-3 pl-10 pr-4 text-sm text-[#0F172A] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-white/30"
               />
@@ -121,7 +138,7 @@ export default function Home() {
             Produk Terbaru
           </h2>
           <span className="text-xs font-medium text-[#475569] bg-[#F1F5F9] py-1.5 px-3 rounded-full">
-            {filteredProducts.length} produk
+            {totalProducts > 0 ? totalProducts : filteredProducts.length} produk
           </span>
         </div>
 
@@ -132,15 +149,52 @@ export default function Home() {
             ))}
           </div>
         ) : filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-                isAdding={addingId === product.id}
-              />
-            ))}
+          <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {filteredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  isAdding={addingId === product.id}
+                />
+              ))}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-4">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="w-9 h-9 flex items-center justify-center text-[#0F172A] bg-white border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-9 h-9 text-sm font-medium rounded-lg transition-colors ${
+                        currentPage === page
+                          ? 'bg-[#0369A1] text-white'
+                          : 'text-[#0F172A] bg-white border border-[#E2E8F0] hover:bg-[#F8FAFC]'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="w-9 h-9 flex items-center justify-center text-[#0F172A] bg-white border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="py-16 text-center border border-[#E2E8F0] rounded-xl bg-white">
