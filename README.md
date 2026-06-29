@@ -74,6 +74,14 @@ npm run dev
 
 ---
 
+## 🌍 Panduan Deployment (Production Deployment)
+
+Untuk panduan lengkap mengenai arsitektur deployment, cara konfigurasi koneksi PostgreSQL (Supabase), serta instruksi deployment untuk Backend (Render / VPS) dan Frontend (Vercel), silakan merujuk ke dokumen khusus berikut:
+
+👉 **[📖 Panduan Lengkap Deployment SEAPEDIA (DEPLOYMENT.md)](./DEPLOYMENT.md)**
+
+---
+
 ## 📋 Aturan Bisnis (Business Rules)
 
 ### 🏪 1. Single-Store Checkout
