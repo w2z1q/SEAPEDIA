@@ -147,7 +147,19 @@ const getProductDetail = async (productId) => {
           id: true,
           name: true
         }
-      }
+      },
+      reviews: {
+        include: {
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
     }
   });
 

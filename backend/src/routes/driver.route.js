@@ -9,6 +9,7 @@ router.use(verifyToken, authorize('DRIVER'));
 
 router.get('/jobs/available', driverController.getAvailableJobs);
 router.get('/jobs/my', driverController.getMyJobs);
+router.get('/jobs/:jobId', driverController.getJobDetail);
 router.post('/jobs/:orderId/take', driverController.takeJob);
 router.put('/jobs/:jobId/complete', driverController.completeJob);
 router.get('/earnings', driverController.getMyEarnings);

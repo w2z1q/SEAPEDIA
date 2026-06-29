@@ -12,6 +12,12 @@ router.get('/users', adminController.getUsers);
 router.get('/stores', adminController.getStores);
 router.get('/orders', adminController.getOrders);
 router.get('/driver-jobs', adminController.getDriverJobs);
+router.get('/products', adminController.getProducts);
+router.get('/vouchers', adminController.getVouchers);
+router.get('/promos', adminController.getPromos);
+router.get('/overdue-orders', adminController.getOverdueOrders);
+router.post('/vouchers', adminController.createVoucher);
+router.post('/promos', adminController.createPromo);
 router.post('/overdue/check', adminController.checkOverdue);
 
 module.exports = router;

@@ -58,9 +58,32 @@ const getPromos = async (req, res) => {
   }
 };
 
+const validateVoucher = async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) {
+      return res.status(400).json({ success: false, message: 'Voucher code is required' });
+    }
+    const voucher = await discountService.validateVoucher(code);
+
+    res.status(200).json({
+      success: true,
+      message: 'Voucher validated successfully',
+      data: voucher,
+    });
+  } catch (error) {
+    if (error.status === 400) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    console.error('Error validating voucher:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createVoucher,
   createPromo,
   getVouchers,
   getPromos,
+  validateVoucher,
 };

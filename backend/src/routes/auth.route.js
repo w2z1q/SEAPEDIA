@@ -10,6 +10,7 @@ router.get('/test', authController.test);
 router.post('/register', authLimiter, authValidator.validateRegister, authController.register);
 router.post('/login', authLimiter, authValidator.validateLogin, authController.login);
 router.get('/profile', verifyToken, authController.profile);
+router.post('/address', verifyToken, authController.addAddress);
 router.post('/logout', verifyToken, authController.logout);
 
 module.exports = router;

@@ -6,7 +6,7 @@ const createReview = async (data, userId = null) => {
   const reviewData = {
     rating: data.rating,
     content: data.content,
-    productId: null, // Optional in updated schema for public application reviews
+    productId: data.productId || null,
   };
 
   if (userId) {
@@ -33,6 +33,25 @@ const createReview = async (data, userId = null) => {
 
 const getReviews = async () => {
   const reviews = await prisma.review.findMany({
+    where: { productId: null },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  return reviews;
+};
+
+const getProductReviews = async (productId) => {
+  const reviews = await prisma.review.findMany({
+    where: { productId },
     orderBy: {
       createdAt: 'desc',
     },
@@ -51,4 +70,5 @@ const getReviews = async () => {
 module.exports = {
   createReview,
   getReviews,
+  getProductReviews,
 };

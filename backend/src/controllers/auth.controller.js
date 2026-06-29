@@ -73,10 +73,26 @@ const logout = async (req, res) => {
   }
 };
 
+const addAddress = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const address = await authService.addAddress(userId, req.body);
+    res.status(201).json({
+      success: true,
+      message: 'Address added successfully',
+      data: address
+    });
+  } catch (error) {
+    console.error('Error adding address:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   test,
   register,
   login,
   profile,
+  addAddress,
   logout
 };

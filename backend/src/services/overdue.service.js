@@ -67,16 +67,19 @@ const processOverdueOrder = async (orderId) => {
   });
 };
 
-const checkOverdueOrders = async () => {
+const checkOverdueOrders = async (simulatedDays = 0) => {
   // Ambil semua order dengan status SEDANG_DIKIRIM
   const activeOrders = await prisma.order.findMany({
     where: {
       status: 'SEDANG_DIKIRIM',
     },
+    include: {
+      orderItems: true,
+    },
   });
 
   const processedOrders = [];
-  const now = Date.now();
+  const now = Date.now() + (simulatedDays * 24 * 60 * 60 * 1000);
 
   for (const order of activeOrders) {
     // SLA Rules: INSTANT -> 1 hari, NEXT_DAY -> 2 hari, REGULAR -> 3 hari
@@ -95,6 +98,7 @@ const checkOverdueOrders = async () => {
 
   return {
     totalProcessed: processedOrders.length,
+    simulatedDays,
     processedOrders,
   };
 };

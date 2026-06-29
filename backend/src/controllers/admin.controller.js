@@ -71,9 +71,96 @@ const getDriverJobs = async (req, res) => {
   }
 };
 
+const getProducts = async (req, res) => {
+  try {
+    const products = await adminService.getProducts();
+
+    res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    console.error('Error fetching admin products:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const getVouchers = async (req, res) => {
+  try {
+    const vouchers = await adminService.getVouchers();
+
+    res.status(200).json({
+      success: true,
+      data: vouchers,
+    });
+  } catch (error) {
+    console.error('Error fetching admin vouchers:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const getPromos = async (req, res) => {
+  try {
+    const promos = await adminService.getPromos();
+
+    res.status(200).json({
+      success: true,
+      data: promos,
+    });
+  } catch (error) {
+    console.error('Error fetching admin promos:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const getOverdueOrders = async (req, res) => {
+  try {
+    const orders = await adminService.getOverdueOrders();
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    console.error('Error fetching admin overdue orders:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const createVoucher = async (req, res) => {
+  try {
+    const voucher = await adminService.createVoucher(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: 'Voucher created successfully',
+      data: voucher,
+    });
+  } catch (error) {
+    console.error('Error creating voucher:', error);
+    res.status(error.status || 400).json({ success: false, message: error.message || 'Failed to create voucher' });
+  }
+};
+
+const createPromo = async (req, res) => {
+  try {
+    const promo = await adminService.createPromo(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: 'Promo created successfully',
+      data: promo,
+    });
+  } catch (error) {
+    console.error('Error creating promo:', error);
+    res.status(error.status || 400).json({ success: false, message: error.message || 'Failed to create promo' });
+  }
+};
+
 const checkOverdue = async (req, res) => {
   try {
-    const result = await overdueService.checkOverdueOrders();
+    const { simulatedDays } = req.body;
+    const result = await overdueService.checkOverdueOrders(simulatedDays ? parseInt(simulatedDays, 10) : 0);
 
     res.status(200).json({
       success: true,
@@ -92,5 +179,11 @@ module.exports = {
   getStores,
   getOrders,
   getDriverJobs,
+  getProducts,
+  getVouchers,
+  getPromos,
+  getOverdueOrders,
+  createVoucher,
+  createPromo,
   checkOverdue,
 };

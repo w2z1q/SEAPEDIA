@@ -1,4 +1,4 @@
-const VALID_STATUSES = ['SEDANG_DIKEMAS', 'DIKIRIM', 'SEDANG_DIKIRIM', 'SELESAI'];
+const VALID_STATUSES = ['SEDANG_DIKEMAS', 'MENUNGGU_PENGIRIM', 'DIKIRIM', 'SEDANG_DIKIRIM', 'SELESAI', 'DIBATALKAN', 'REFUND', 'DIKEMBALIKAN'];
 
 const validateUpdateOrderStatus = (req, res, next) => {
   const { status } = req.body;
@@ -13,7 +13,7 @@ const validateUpdateOrderStatus = (req, res, next) => {
   if (!VALID_STATUSES.includes(status)) {
     return res.status(400).json({
       success: false,
-      message: 'Invalid order status. Allowed values: SEDANG_DIKEMAS, DIKIRIM, SEDANG_DIKIRIM, SELESAI',
+      message: 'Invalid order status. Allowed values: SEDANG_DIKEMAS, MENUNGGU_PENGIRIM, DIKIRIM, SEDANG_DIKIRIM, SELESAI, DIBATALKAN, REFUND, DIKEMBALIKAN',
     });
   }
 

@@ -11,6 +11,12 @@ const getAvailableJobs = async () => {
     include: {
       store: true,
       address: true,
+      user: true,
+      orderItems: {
+        include: {
+          product: true,
+        },
+      },
     },
     orderBy: {
       createdAt: 'desc',
@@ -28,6 +34,12 @@ const getMyJobs = async (driverId) => {
         include: {
           store: true,
           address: true,
+          user: true,
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
         },
       },
     },
@@ -37,6 +49,40 @@ const getMyJobs = async (driverId) => {
   });
 
   return jobs;
+};
+
+const getJobDetail = async (driverId, jobId) => {
+  const job = await prisma.driverJob.findUnique({
+    where: { id: jobId },
+    include: {
+      order: {
+        include: {
+          store: true,
+          address: true,
+          user: true,
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!job) {
+    const error = new Error('Job not found');
+    error.status = 404;
+    throw error;
+  }
+
+  if (job.driverId !== driverId) {
+    const error = new Error('Unauthorized to access this job detail');
+    error.status = 403;
+    throw error;
+  }
+
+  return job;
 };
 
 const takeJob = async (driverId, orderId) => {
@@ -118,6 +164,19 @@ const completeJob = async (driverId, jobId) => {
       },
     });
 
+    // Catat SellerIncome agar penjual mendapatkan uangnya saat pesanan diselesaikan oleh driver
+    const existingIncome = await tx.sellerIncome.findFirst({
+      where: { storeId: job.order.storeId, amount: job.order.total },
+    });
+    if (!existingIncome) {
+      await tx.sellerIncome.create({
+        data: {
+          storeId: job.order.storeId,
+          amount: job.order.total,
+        },
+      });
+    }
+
     return { job, order: updatedOrder, earning };
   });
 };
@@ -131,6 +190,9 @@ const getMyEarnings = async (driverId) => {
           id: true,
           shippingCost: true,
           status: true,
+          deliveryMethod: true,
+          createdAt: true,
+          updatedAt: true,
         },
       },
     },
@@ -147,6 +209,7 @@ const getMyEarnings = async (driverId) => {
 module.exports = {
   getAvailableJobs,
   getMyJobs,
+  getJobDetail,
   takeJob,
   completeJob,
   getMyEarnings,

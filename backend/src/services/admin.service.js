@@ -89,6 +89,11 @@ const getOrders = async () => {
         },
       },
       store: true,
+      orderItems: {
+        include: {
+          product: true,
+        },
+      },
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -118,10 +123,124 @@ const getDriverJobs = async () => {
   return jobs;
 };
 
+const getProducts = async () => {
+  const products = await prisma.product.findMany({
+    include: {
+      store: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return products;
+};
+
+const getVouchers = async () => {
+  const vouchers = await prisma.voucher.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return vouchers;
+};
+
+const getPromos = async () => {
+  const promos = await prisma.promo.findMany({
+    include: {
+      store: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return promos;
+};
+
+const getOverdueOrders = async () => {
+  const orders = await prisma.order.findMany({
+    where: {
+      status: {
+        in: ['DIKEMBALIKAN', 'DIBATALKAN', 'REFUND'],
+      },
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      store: true,
+      orderItems: {
+        include: {
+          product: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return orders;
+};
+
+const createVoucher = async (data) => {
+  const { code, discount, expiry, usageLimit } = data;
+
+  const existing = await prisma.voucher.findUnique({
+    where: { code },
+  });
+
+  if (existing) {
+    const error = new Error('Voucher code already exists');
+    error.status = 400;
+    throw error;
+  }
+
+  const voucher = await prisma.voucher.create({
+    data: {
+      code,
+      discount: parseFloat(discount),
+      expiry: new Date(expiry),
+      usageLimit: parseInt(usageLimit, 10),
+      usedCount: 0,
+    },
+  });
+
+  return voucher;
+};
+
+const createPromo = async (data) => {
+  const { storeId, name, discount, expiry } = data;
+
+  const store = await prisma.store.findUnique({
+    where: { id: storeId },
+  });
+
+  if (!store) {
+    const error = new Error('Store not found');
+    error.status = 404;
+    throw error;
+  }
+
+  const promo = await prisma.promo.create({
+    data: {
+      storeId,
+      name,
+      discount: parseFloat(discount),
+      expiry: new Date(expiry),
+    },
+  });
+
+  return promo;
+};
+
 module.exports = {
   getStats,
   getUsers,
   getStores,
   getOrders,
   getDriverJobs,
+  getProducts,
+  getVouchers,
+  getPromos,
+  getOverdueOrders,
+  createVoucher,
+  createPromo,
 };

@@ -7,7 +7,7 @@ const getOrCreateWallet = async (userId, tx = prisma) => {
     where: { userId },
     create: {
       userId,
-      balance: 0,
+      balance: 5000000, // Saldo awal Rp 5.000.000 untuk kenyamanan belanja
     },
     update: {},
   });

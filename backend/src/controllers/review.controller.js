@@ -30,7 +30,22 @@ const getReviews = async (req, res) => {
   }
 };
 
+const getProductReviews = async (req, res) => {
+  try {
+    const reviews = await reviewService.getProductReviews(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      data: reviews,
+    });
+  } catch (error) {
+    console.error('Error fetching product reviews:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createReview,
   getReviews,
+  getProductReviews,
 };

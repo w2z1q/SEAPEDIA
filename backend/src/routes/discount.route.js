@@ -8,6 +8,7 @@ const promoRouter = express.Router();
 
 // Vouchers
 voucherRouter.get('/', discountController.getVouchers);
+voucherRouter.post('/validate', discountController.validateVoucher);
 voucherRouter.post('/', verifyToken, authorize('ADMIN'), discountValidator.validateCreateVoucher, discountController.createVoucher);
 
 // Promos

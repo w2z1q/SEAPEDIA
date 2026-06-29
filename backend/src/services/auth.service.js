@@ -21,7 +21,7 @@ const registerUser = async (data) => {
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Buat User dan UserRole dalam satu transaction
+  // Buat User dan 1 UserRole saja (Satu Akun Satu Peran Aja)
   const result = await prisma.$transaction(async (tx) => {
     const user = await tx.user.create({
       data: {
@@ -33,10 +33,7 @@ const registerUser = async (data) => {
     });
 
     await tx.userRole.create({
-      data: {
-        userId: user.id,
-        role: 'BUYER',
-      },
+      data: { userId: user.id, role: 'BUYER' },
     });
 
     return user;
@@ -48,6 +45,7 @@ const registerUser = async (data) => {
 const loginUser = async (email, password) => {
   const user = await prisma.user.findUnique({
     where: { email },
+    include: { roles: true }
   });
 
   if (!user) {
@@ -72,6 +70,9 @@ const loginUser = async (email, password) => {
 
   const secret = process.env.JWT_SECRET || 'secret';
   const accessToken = jwt.sign(payload, secret, { expiresIn: '7d' });
+  
+  // SATU AKUN SATU PERAN AJA
+  const userRoles = [user.activeRole];
 
   return {
     accessToken,
@@ -80,6 +81,8 @@ const loginUser = async (email, password) => {
       name: user.name,
       email: user.email,
       role: user.activeRole,
+      activeRole: user.activeRole,
+      roles: userRoles,
     }
   };
 };
@@ -92,6 +95,7 @@ const getProfile = async (userId) => {
       name: true,
       email: true,
       activeRole: true,
+      addresses: true,
     }
   });
 
@@ -106,7 +110,21 @@ const getProfile = async (userId) => {
     name: user.name,
     email: user.email,
     role: user.activeRole,
+    addresses: user.addresses || [],
   };
+};
+
+const addAddress = async (userId, data) => {
+  const { address, city, zipCode } = data;
+  const newAddress = await prisma.address.create({
+    data: {
+      userId,
+      address,
+      city,
+      zipCode,
+    },
+  });
+  return newAddress;
 };
 
 const logoutUser = async () => {
@@ -119,5 +137,6 @@ module.exports = {
   registerUser,
   loginUser,
   getProfile,
+  addAddress,
   logoutUser,
 };

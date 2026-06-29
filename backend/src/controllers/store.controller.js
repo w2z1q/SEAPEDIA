@@ -37,7 +37,27 @@ const getMyStore = async (req, res) => {
   }
 };
 
+const updateStore = async (req, res) => {
+  try {
+    const sellerId = req.user.id;
+    const store = await storeService.updateStore(sellerId, req.body);
+    
+    res.status(200).json({
+      success: true,
+      message: 'Store updated successfully',
+      data: store
+    });
+  } catch (error) {
+    if (error.status === 409 || error.status === 404) {
+      return res.status(error.status).json({ success: false, message: error.message });
+    }
+    console.error('Error updating store:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createStore,
+  updateStore,
   getMyStore,
 };

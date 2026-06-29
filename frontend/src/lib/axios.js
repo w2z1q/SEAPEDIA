@@ -7,4 +7,34 @@ const api = axios.create({
   },
 });
 
+// Request Interceptor: Menyisipkan token JWT jika tersedia di localStorage
+api.interceptors.request.use(
+  (config) => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response Interceptor: Menangani error secara global (misal token expired / unauthorized)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      // Jika token tidak valid atau expired, bisa ditambahkan penanganan khusus
+      // misal menghapus token atau mengarahkan ke login jika diperlukan
+      console.warn('Unauthorized access or token expired:', error.response.data);
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
+

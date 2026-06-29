@@ -3,8 +3,8 @@ const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-
 const validateAddToCart = (req, res, next) => {
   const { productId, quantity } = req.body;
 
-  if (!productId || typeof productId !== 'string' || !UUID_REGEX.test(productId)) {
-    return res.status(400).json({ success: false, message: 'Valid productId (UUID) is required' });
+  if (!productId || typeof productId !== 'string') {
+    return res.status(400).json({ success: false, message: 'Valid productId is required' });
   }
 
   if (quantity === undefined || typeof quantity !== 'number' || !Number.isInteger(quantity) || quantity <= 0) {

@@ -28,6 +28,21 @@ const getMyJobs = async (req, res) => {
   }
 };
 
+const getJobDetail = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const job = await driverService.getJobDetail(req.user.id, jobId);
+
+    res.status(200).json({
+      success: true,
+      data: job,
+    });
+  } catch (error) {
+    console.error('Error fetching job detail:', error);
+    res.status(error.status || 500).json({ success: false, message: error.message || 'Internal server error' });
+  }
+};
+
 const takeJob = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -77,6 +92,7 @@ const getMyEarnings = async (req, res) => {
 module.exports = {
   getAvailableJobs,
   getMyJobs,
+  getJobDetail,
   takeJob,
   completeJob,
   getMyEarnings,

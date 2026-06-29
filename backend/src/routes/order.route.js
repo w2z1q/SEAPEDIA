@@ -10,6 +10,7 @@ router.use(verifyToken);
 
 // BUYER only - Checkout
 router.post('/checkout', authorize('BUYER'), orderValidator.validateCheckout, orderController.checkout);
+router.post('/', authorize('BUYER'), orderValidator.validateCheckout, orderController.checkout);
 
 // SELLER only - Daftar pesanan toko (Statik, diletakkan sebelum rute dinamis /:id)
 router.get('/seller', authorize('SELLER'), orderController.getSellerOrders);
