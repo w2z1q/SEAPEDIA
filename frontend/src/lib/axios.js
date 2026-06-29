@@ -28,8 +28,6 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // Jika token tidak valid atau expired, bisa ditambahkan penanganan khusus
-      // misal menghapus token atau mengarahkan ke login jika diperlukan
       console.warn('Unauthorized access or token expired:', error.response.data);
     }
     return Promise.reject(error);

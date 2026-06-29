@@ -86,7 +86,13 @@ export default function Home() {
       )}
 
       {/* Hero */}
-      <div className="bg-[#0369A1] rounded-xl p-10 md:p-14 text-center relative overflow-hidden">
+      <div 
+        className="rounded-xl p-10 md:p-14 text-center relative overflow-hidden bg-cover bg-center bg-no-repeat shadow-sm"
+        style={{ backgroundImage: `url('/hasil-laut.jpeg')` }}
+      >
+        {/* Overlay gelap agar tulisan tetap terbaca jelas & bernuansa premium */}
+        <div className="absolute inset-0 bg-[#0F172A]/65 z-0"></div>
+
         <div className="max-w-2xl mx-auto space-y-5 relative z-10">
           <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
             Produk Hasil Laut Berkualitas
