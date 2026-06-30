@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
                   <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-4">
                     <Tag className="w-5 h-5 text-[#0369A1]" />
                     <h3 className="text-base font-semibold text-[#0F172A] tracking-tight">
-                      Admin Endpoint: Buat Voucher Platform
+                      Buat Voucher Platform
                     </h3>
                   </div>
                   <form onSubmit={handleCreateVoucher} className="space-y-5">
@@ -295,7 +295,7 @@ export default function AdminDashboardPage() {
                   <div className="flex items-center gap-2 border-b border-[#E2E8F0] pb-4">
                     <Percent className="w-5 h-5 text-[#0369A1]" />
                     <h3 className="text-base font-semibold text-[#0F172A] tracking-tight">
-                      Admin Endpoint: Buat Promo Toko
+                      Buat Promo Toko
                     </h3>
                   </div>
                   <form onSubmit={handleCreatePromo} className="space-y-5">
