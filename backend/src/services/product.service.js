@@ -9,6 +9,21 @@ const formatProduct = (product) => {
   if (!product) return product;
   const formatted = { ...product, imageUrl: product.image };
   delete formatted.image;
+  
+  // If store has active promos, apply the first one
+  if (product.store && product.store.promos && product.store.promos.length > 0) {
+    const promo = product.store.promos[0];
+    formatted.originalPrice = product.price;
+    if (promo.discount <= 100) {
+      formatted.price = product.price - (product.price * (promo.discount / 100));
+    } else {
+      formatted.price = Math.max(0, product.price - promo.discount);
+    }
+    formatted.promo = { name: promo.name, discount: promo.discount };
+  } else {
+    formatted.originalPrice = product.price;
+  }
+  
   return formatted;
 };
 
@@ -59,6 +74,16 @@ const getMyProducts = async (sellerId) => {
   const products = await prisma.product.findMany({
     where: { storeId: store.id },
     orderBy: { createdAt: 'desc' },
+    include: {
+      store: {
+        include: {
+          promos: {
+            where: { expiry: { gt: new Date() } },
+            take: 1
+          }
+        }
+      }
+    }
   });
 
   return products.map(formatProduct);
@@ -120,7 +145,11 @@ const getAllProducts = async (filters) => {
         store: {
           select: {
             id: true,
-            name: true
+            name: true,
+            promos: {
+              where: { expiry: { gt: new Date() } },
+              take: 1
+            }
           }
         }
       }
@@ -145,7 +174,11 @@ const getProductDetail = async (productId) => {
       store: {
         select: {
           id: true,
-          name: true
+          name: true,
+          promos: {
+            where: { expiry: { gt: new Date() } },
+            take: 1
+          }
         }
       },
       reviews: {

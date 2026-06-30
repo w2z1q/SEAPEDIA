@@ -141,7 +141,14 @@ export default function OrderDetailPage() {
             <div className="space-y-2 text-sm text-[#475569] pb-3 border-b border-[#E2E8F0]">
               <div className="flex justify-between"><span>Subtotal</span><span className="font-medium text-[#0F172A]">{formatPrice(order.subtotal)}</span></div>
               <div className="flex justify-between"><span>Ongkir ({translateDelivery(order.deliveryMethod)})</span><span className="font-medium text-[#0F172A]">{formatPrice(order.shippingCost)}</span></div>
-              {order.discount > 0 && <div className="flex justify-between text-[#166534]"><span>Diskon</span><span className="font-medium">-{formatPrice(order.discount)}</span></div>}
+              {order.discount > 0 && (
+                <div className="flex justify-between text-[#166534]">
+                  <span>
+                    Diskon {order.voucher && order.promo ? 'Promo & Voucher' : order.voucher ? `Voucher ${order.voucher.discount <= 100 ? `(${order.voucher.discount}%)` : `(${formatPrice(order.voucher.discount)})`}` : 'Promo'}
+                  </span>
+                  <span className="font-medium">-{formatPrice(order.discount)}</span>
+                </div>
+              )}
               <div className="flex justify-between"><span>PPN (12%)</span><span className="font-medium text-[#0F172A]">{formatPrice(order.tax)}</span></div>
             </div>
             <div className="flex items-center justify-between pt-1">

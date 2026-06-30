@@ -18,6 +18,8 @@ router.get('/promos', adminController.getPromos);
 router.get('/overdue-orders', adminController.getOverdueOrders);
 router.post('/vouchers', adminController.createVoucher);
 router.post('/promos', adminController.createPromo);
+router.delete('/vouchers/:id', adminController.deleteVoucher);
+router.delete('/promos/:id', adminController.deletePromo);
 router.post('/overdue/check', adminController.checkOverdue);
 
 module.exports = router;

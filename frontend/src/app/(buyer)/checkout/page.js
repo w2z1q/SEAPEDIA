@@ -120,10 +120,17 @@ export default function CheckoutPage() {
     );
   }
 
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.product?.price * item.quantity), 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + (item.product?.originalPrice * item.quantity), 0);
+  const effectiveSubtotal = cartItems.reduce((acc, item) => acc + (item.product?.price * item.quantity), 0);
+  const promoDiscount = subtotal - effectiveSubtotal;
+  
   const shippingCost = deliveryMethod === 'INSTANT' ? 25000 : deliveryMethod === 'NEXT_DAY' ? 15000 : 10000;
-  const rawDiscount = appliedVoucher ? (appliedVoucher.discount <= 100 ? subtotal * (appliedVoucher.discount / 100) : appliedVoucher.discount) : 0;
-  const discount = Math.min(subtotal, rawDiscount);
+  
+  // Voucher is calculated on the effective subtotal to prevent double discount abuse
+  const rawDiscount = appliedVoucher ? (appliedVoucher.discount <= 100 ? effectiveSubtotal * (appliedVoucher.discount / 100) : appliedVoucher.discount) : 0;
+  const voucherDiscount = Math.min(effectiveSubtotal, rawDiscount);
+  
+  const discount = voucherDiscount + promoDiscount;
   const tax = (subtotal - discount + shippingCost) * 0.12;
   const total = subtotal - discount + shippingCost + tax;
 
@@ -216,7 +223,14 @@ export default function CheckoutPage() {
             {cartItems.map((item) => (
               <div key={item.id} className="flex items-center justify-between text-sm">
                 <span className="text-[#475569] line-clamp-1">{item.product?.name} <span className="text-[#0F172A] font-medium">x{item.quantity}</span></span>
-                <span className="font-medium text-[#0F172A]">{formatPrice(item.product?.price * item.quantity)}</span>
+                <div className="flex flex-col items-end">
+                  {item.product?.originalPrice > item.product?.price && (
+                    <span className="text-xs text-[#94A3B8] line-through font-medium -mb-0.5">
+                      {formatPrice(item.product?.originalPrice * item.quantity)}
+                    </span>
+                  )}
+                  <span className="font-medium text-[#0F172A]">{formatPrice(item.product?.price * item.quantity)}</span>
+                </div>
               </div>
             ))}
           </div>
@@ -241,7 +255,8 @@ export default function CheckoutPage() {
           <div className="space-y-2 text-sm text-[#475569] pb-3 border-b border-[#E2E8F0]">
             <div className="flex justify-between"><span>Subtotal</span><span className="font-medium text-[#0F172A]">{formatPrice(subtotal)}</span></div>
             <div className="flex justify-between"><span>Ongkir ({translateDelivery(deliveryMethod)})</span><span className="font-medium text-[#0F172A]">{formatPrice(shippingCost)}</span></div>
-            {discount > 0 && <div className="flex justify-between text-[#166534]"><span>Diskon</span><span className="font-medium">-{formatPrice(discount)}</span></div>}
+            {promoDiscount > 0 && <div className="flex justify-between text-[#166534]"><span>Diskon Promo</span><span className="font-medium">-{formatPrice(promoDiscount)}</span></div>}
+            {voucherDiscount > 0 && <div className="flex justify-between text-[#166534]"><span>Diskon Voucher {appliedVoucher ? (appliedVoucher.discount <= 100 ? `(${appliedVoucher.discount}%)` : `(${formatPrice(appliedVoucher.discount)})`) : ''}</span><span className="font-medium">-{formatPrice(voucherDiscount)}</span></div>}
             <div className="flex justify-between"><span>PPN (12%)</span><span className="font-medium text-[#0F172A]">{formatPrice(tax)}</span></div>
           </div>
 

@@ -146,6 +146,30 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleDeleteVoucher = async (id) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus voucher ini?')) return;
+    try {
+      await api.delete(`/admin/vouchers/${id}`);
+      alert('Voucher berhasil dihapus');
+      fetchAdminData();
+      if (selectedVoucher?.id === id) setSelectedVoucher(null);
+    } catch (error) {
+      alert(error.response?.data?.message || 'Gagal menghapus voucher');
+    }
+  };
+
+  const handleDeletePromo = async (id) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus promo ini?')) return;
+    try {
+      await api.delete(`/admin/promos/${id}`);
+      alert('Promo berhasil dihapus');
+      fetchAdminData();
+      if (selectedPromo?.id === id) setSelectedPromo(null);
+    } catch (error) {
+      alert(error.response?.data?.message || 'Gagal menghapus promo');
+    }
+  };
+
   return (
     <ProtectedRoute allowedRoles={['ADMIN']}>
       {loading && !stats ? (
@@ -653,7 +677,10 @@ export default function AdminDashboardPage() {
                     <div className="flex justify-between"><strong className="text-[#0F172A]">Waktu Diterbitkan:</strong> <span>{new Date(selectedVoucher.createdAt).toLocaleString('id-ID')}</span></div>
                   </div>
                 </div>
-                <div className="bg-[#F8FAFC] p-4 border-t border-[#E2E8F0] flex justify-end">
+                <div className="bg-[#F8FAFC] p-4 border-t border-[#E2E8F0] flex justify-between items-center">
+                  <button onClick={() => handleDeleteVoucher(selectedVoucher.id)} className="text-sm font-medium text-[#DC2626] hover:text-[#991B1B] transition-colors">
+                    Hapus Voucher
+                  </button>
                   <Button variant="primary" size="sm" onClick={() => setSelectedVoucher(null)}>Tutup Rincian</Button>
                 </div>
               </div>
@@ -689,7 +716,10 @@ export default function AdminDashboardPage() {
                     <div className="flex justify-between"><strong className="text-[#0F172A]">Waktu Diterbitkan:</strong> <span>{new Date(selectedPromo.createdAt).toLocaleString('id-ID')}</span></div>
                   </div>
                 </div>
-                <div className="bg-[#F8FAFC] p-4 border-t border-[#E2E8F0] flex justify-end">
+                <div className="bg-[#F8FAFC] p-4 border-t border-[#E2E8F0] flex justify-between items-center">
+                  <button onClick={() => handleDeletePromo(selectedPromo.id)} className="text-sm font-medium text-[#DC2626] hover:text-[#991B1B] transition-colors">
+                    Hapus Promo
+                  </button>
                   <Button variant="primary" size="sm" onClick={() => setSelectedPromo(null)}>Tutup Rincian</Button>
                 </div>
               </div>

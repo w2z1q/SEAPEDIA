@@ -50,6 +50,14 @@ const findCartItem = async (userId, cartItemId) => {
           stock: true,
           image: true,
           storeId: true,
+          store: {
+            include: {
+              promos: {
+                where: { expiry: { gt: new Date() } },
+                take: 1
+              }
+            }
+          }
         },
       },
     },
@@ -65,14 +73,30 @@ const findCartItem = async (userId, cartItemId) => {
 };
 
 const formatCartItem = (item) => {
+  let effectivePrice = item.product.price;
+  let originalPrice = item.product.price;
+  let promo = null;
+
+  if (item.product.store && item.product.store.promos && item.product.store.promos.length > 0) {
+    const activePromo = item.product.store.promos[0];
+    promo = { name: activePromo.name, discount: activePromo.discount };
+    if (activePromo.discount <= 100) {
+      effectivePrice = item.product.price - (item.product.price * (activePromo.discount / 100));
+    } else {
+      effectivePrice = Math.max(0, item.product.price - activePromo.discount);
+    }
+  }
+
   return Object.freeze({
     id: item.id,
     quantity: item.quantity,
-    subtotal: item.quantity * item.product.price,
+    subtotal: item.quantity * effectivePrice,
     product: Object.freeze({
       id: item.product.id,
       name: item.product.name,
-      price: item.product.price,
+      price: effectivePrice,
+      originalPrice,
+      promo,
       imageUrl: item.product.image,
       storeId: item.product.storeId,
     }),
@@ -134,7 +158,10 @@ const addToCart = async (userId, data) => {
             data: { quantity: totalQty },
             include: {
               product: {
-                select: { id: true, name: true, price: true, image: true, storeId: true },
+                select: { 
+                  id: true, name: true, price: true, image: true, storeId: true,
+                  store: { include: { promos: { where: { expiry: { gt: new Date() } }, take: 1 } } }
+                },
               },
             },
           });
@@ -148,7 +175,10 @@ const addToCart = async (userId, data) => {
             },
             include: {
               product: {
-                select: { id: true, name: true, price: true, image: true, storeId: true },
+                select: { 
+                  id: true, name: true, price: true, image: true, storeId: true,
+                  store: { include: { promos: { where: { expiry: { gt: new Date() } }, take: 1 } } }
+                },
               },
             },
           });
@@ -175,7 +205,10 @@ const getMyCart = async (userId) => {
         orderBy: { updatedAt: 'desc' },
         include: {
           product: {
-            select: { id: true, name: true, price: true, image: true, storeId: true },
+            select: { 
+              id: true, name: true, price: true, image: true, storeId: true,
+              store: { include: { promos: { where: { expiry: { gt: new Date() } }, take: 1 } } }
+            },
           },
         },
       },
@@ -209,7 +242,10 @@ const updateCartItem = async (userId, id, quantity) => {
     data: { quantity },
     include: {
       product: {
-        select: { id: true, name: true, price: true, image: true, storeId: true },
+        select: { 
+          id: true, name: true, price: true, image: true, storeId: true,
+          store: { include: { promos: { where: { expiry: { gt: new Date() } }, take: 1 } } }
+        },
       },
     },
   });

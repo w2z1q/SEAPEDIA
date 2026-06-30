@@ -80,10 +80,40 @@ const validateVoucher = async (req, res) => {
   }
 };
 
+const deleteVoucher = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await discountService.deleteVoucher(id);
+    res.status(200).json({ success: true, message: 'Voucher deleted successfully' });
+  } catch (error) {
+    if (error.status === 404) {
+      return res.status(404).json({ success: false, message: error.message });
+    }
+    console.error('Error deleting voucher:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+const deletePromo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await discountService.deletePromo(id);
+    res.status(200).json({ success: true, message: 'Promo deleted successfully' });
+  } catch (error) {
+    if (error.status === 404) {
+      return res.status(404).json({ success: false, message: error.message });
+    }
+    console.error('Error deleting promo:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   createVoucher,
   createPromo,
   getVouchers,
   getPromos,
   validateVoucher,
+  deleteVoucher,
+  deletePromo,
 };

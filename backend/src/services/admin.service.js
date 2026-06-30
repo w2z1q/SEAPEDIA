@@ -231,6 +231,42 @@ const createPromo = async (data) => {
   return promo;
 };
 
+const deleteVoucher = async (id) => {
+  const voucher = await prisma.voucher.findUnique({ where: { id } });
+  if (!voucher) {
+    const error = new Error('Voucher not found');
+    error.status = 404;
+    throw error;
+  }
+  
+  // Unlink from orders first to avoid foreign key constraint failure
+  await prisma.order.updateMany({
+    where: { voucherId: id },
+    data: { voucherId: null }
+  });
+
+  await prisma.voucher.delete({ where: { id } });
+  return { success: true };
+};
+
+const deletePromo = async (id) => {
+  const promo = await prisma.promo.findUnique({ where: { id } });
+  if (!promo) {
+    const error = new Error('Promo not found');
+    error.status = 404;
+    throw error;
+  }
+
+  // Unlink from orders first to avoid foreign key constraint failure
+  await prisma.order.updateMany({
+    where: { promoId: id },
+    data: { promoId: null }
+  });
+
+  await prisma.promo.delete({ where: { id } });
+  return { success: true };
+};
+
 module.exports = {
   getStats,
   getUsers,
@@ -243,4 +279,6 @@ module.exports = {
   getOverdueOrders,
   createVoucher,
   createPromo,
+  deleteVoucher,
+  deletePromo,
 };

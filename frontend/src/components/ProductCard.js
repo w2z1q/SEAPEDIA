@@ -30,6 +30,11 @@ export default function ProductCard({ product, onAddToCart, isAdding = false }) 
             Habis
           </span>
         )}
+        {product.promo && (
+          <span className="absolute top-2.5 left-2.5 bg-[#DC2626] text-white text-xs font-medium px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
+            Promo
+          </span>
+        )}
       </Link>
 
       <div className="flex flex-col flex-1 p-4 gap-3">
@@ -47,9 +52,16 @@ export default function ProductCard({ product, onAddToCart, isAdding = false }) 
         <p className="text-xs text-[#475569] line-clamp-2 flex-1 leading-relaxed">{product.description}</p>
 
         <div className="pt-3 border-t border-[#E2E8F0] flex items-center justify-between gap-3 mt-auto">
-          <span className="text-base font-semibold text-[#0F172A]">
-            {formatPrice(product.price)}
-          </span>
+          <div className="flex flex-col">
+            {product.originalPrice && product.originalPrice > product.price && (
+              <span className="text-xs text-[#94A3B8] line-through font-medium -mb-0.5">
+                {formatPrice(product.originalPrice)}
+              </span>
+            )}
+            <span className="text-base font-semibold text-[#0F172A]">
+              {formatPrice(product.price)}
+            </span>
+          </div>
 
           <Button
             variant="primary"

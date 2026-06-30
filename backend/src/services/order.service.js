@@ -63,7 +63,7 @@ const checkout = async (userId, data = {}) => {
     // 5. Ambil storeId dari produk pertama
     const storeId = cart.cartItems[0].product.storeId;
 
-    // 5b. Validasi voucherId dan promoId jika ada
+    // 5b. Validasi voucherId dan promo otomatis
     let voucher = null;
     let promo = null;
 
@@ -71,14 +71,19 @@ const checkout = async (userId, data = {}) => {
       voucher = await discountService.validateVoucher(data.voucherId, tx);
     }
 
-    if (data.promoId) {
-      promo = await discountService.validatePromo(data.promoId, storeId, tx);
-    }
+    // Otomatis cari promo aktif di toko ini
+    promo = await tx.promo.findFirst({
+      where: {
+        storeId,
+        expiry: { gt: new Date() }
+      }
+    });
 
     // 6. Hitung subtotal, discount, deliveryFee, tax, total
     const subtotal = calculateOrderTotal(cart.cartItems);
+    const totalQuantity = cart.cartItems.reduce((acc, item) => acc + item.quantity, 0);
     const voucherDiscount = voucher ? (voucher.discount <= 100 ? subtotal * (voucher.discount / 100) : voucher.discount) : 0;
-    const promoDiscount = promo ? (promo.discount <= 100 ? subtotal * (promo.discount / 100) : promo.discount) : 0;
+    const promoDiscount = promo ? (promo.discount <= 100 ? subtotal * (promo.discount / 100) : promo.discount * totalQuantity) : 0;
     // Pastikan total diskon tidak melebihi subtotal
     const discount = Math.min(subtotal, voucherDiscount + promoDiscount);
     const deliveryFee = data.deliveryMethod === 'INSTANT' ? 25000 : data.deliveryMethod === 'NEXT_DAY' ? 15000 : 10000;

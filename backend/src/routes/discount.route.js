@@ -10,10 +10,12 @@ const promoRouter = express.Router();
 voucherRouter.get('/', discountController.getVouchers);
 voucherRouter.post('/validate', discountController.validateVoucher);
 voucherRouter.post('/', verifyToken, authorize('ADMIN'), discountValidator.validateCreateVoucher, discountController.createVoucher);
+voucherRouter.delete('/:id', verifyToken, authorize('ADMIN'), discountController.deleteVoucher);
 
 // Promos
 promoRouter.get('/', discountController.getPromos);
 promoRouter.post('/', verifyToken, authorize('ADMIN'), discountValidator.validateCreatePromo, discountController.createPromo);
+promoRouter.delete('/:id', verifyToken, authorize('ADMIN'), discountController.deletePromo);
 
 module.exports = {
   voucherRouter,
