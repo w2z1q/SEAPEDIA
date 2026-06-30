@@ -12,6 +12,11 @@ async function main() {
   await prisma.cart.deleteMany({});
   await prisma.product.deleteMany({});
   await prisma.store.deleteMany({});
+  await prisma.address.deleteMany({});
+  await prisma.walletTransaction.deleteMany({});
+  await prisma.wallet.deleteMany({});
+  await prisma.userRole.deleteMany({});
+  await prisma.user.deleteMany({});
   
   const adminEmail = 'admin@seapedia.com';
   const hashedPassword = await bcrypt.hash('password123', 10);
@@ -48,7 +53,19 @@ async function main() {
       name: 'Buyer',
       password: hashedPassword,
       activeRole: 'BUYER',
-      roles: { create: [{ role: 'BUYER' }] }
+      roles: { create: [{ role: 'BUYER' }] },
+      wallet: {
+        create: { balance: 5000000 }
+      },
+      addresses: {
+        create: [
+          {
+            city: 'Jakarta Selatan',
+            zipCode: '12345',
+            address: 'Jl. Jenderal Sudirman No. 1, Senayan'
+          }
+        ]
+      }
     }
   });
 

@@ -48,6 +48,7 @@ Pastikan kamu sudah menginstal **Node.js** (v18+) dan **PostgreSQL**.
 ## 🔑 Demo Akun (Seed Data)
 Kamu bisa menggunakan fungsi register pada web atau login dengan akun-akun berikut (Jika kamu melakukan seed data DB):
 - **Admin**: `admin@seapedia.com` / `password123`
+- **Buyer**: `buyer@seapedia.com` / `password123` *(Memiliki Saldo 5.000.000 & 1 Alamat Tersimpan)*
 - **Seller Utama**: `seller@seapedia.com` / `password123` *(Memiliki Toko "Seapedia Beauty" dengan 10 produk Kosmetik/Perawatan)*
 - **Driver**: `driver@seapedia.com` / `password123`
 - Atau buat akun baru dan ubah rolenya sesuka hati menggunakan fitur *Multi-role switch*.
