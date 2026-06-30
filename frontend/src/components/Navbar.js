@@ -103,21 +103,17 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3">
 
         {/* ── Logo ── */}
-        <Link
-          href="/"
-          className="shrink-0 flex items-center gap-1 group"
-          aria-label="SEAPEDIA beranda"
-        >
-          <span
-            className="text-xl font-bold tracking-tight"
-            style={{ color: '#DC2626', letterSpacing: '-0.5px' }}
-          >
-            SEA
-          </span>
-          <span className="text-xl font-bold tracking-tight text-gray-900" style={{ letterSpacing: '-0.5px' }}>
-            PEDIA
-          </span>
-        </Link>
+        {!isBuyer ? (
+          <div className="shrink-0 flex items-center gap-1">
+            <span className="text-xl font-bold tracking-tight" style={{ color: '#DC2626', letterSpacing: '-0.5px' }}>SEA</span>
+            <span className="text-xl font-bold tracking-tight text-gray-900" style={{ letterSpacing: '-0.5px' }}>PEDIA</span>
+          </div>
+        ) : (
+          <Link href="/" className="shrink-0 flex items-center gap-1 group" aria-label="SEAPEDIA beranda">
+            <span className="text-xl font-bold tracking-tight" style={{ color: '#DC2626', letterSpacing: '-0.5px' }}>SEA</span>
+            <span className="text-xl font-bold tracking-tight text-gray-900" style={{ letterSpacing: '-0.5px' }}>PEDIA</span>
+          </Link>
+        )}
 
         {/* ── Search Bar (desktop) ── */}
         {!isDashboardRole && (
