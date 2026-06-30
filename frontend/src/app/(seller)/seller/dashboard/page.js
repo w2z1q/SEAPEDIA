@@ -7,6 +7,7 @@ import Button from '../../../../components/Button';
 import Input from '../../../../components/Input';
 import Link from 'next/link';
 import ProtectedRoute from '../../../../components/ProtectedRoute';
+import SidebarLayout from '../../../../components/SidebarLayout';
 import { formatPrice } from '../../../../lib/utils';
 import { Store, TrendingUp, Package, ShoppingBag, Plus, Edit3, X, Check } from 'lucide-react';
 
@@ -84,6 +85,7 @@ export default function SellerDashboardPage() {
 
   return (
     <ProtectedRoute allowedRoles={['SELLER']}>
+      <SidebarLayout role="SELLER">
       {loading ? (
         <div className="w-full animate-pulse h-96 bg-white border border-[#E2E8F0] rounded-xl my-12" />
       ) : !store ? (
@@ -259,6 +261,7 @@ export default function SellerDashboardPage() {
           </div>
         </div>
       )}
+      </SidebarLayout>
     </ProtectedRoute>
   );
 }

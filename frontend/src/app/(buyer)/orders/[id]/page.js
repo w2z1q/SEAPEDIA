@@ -59,8 +59,8 @@ export default function OrderDetailPage() {
   return (
     <div className="flex flex-col flex-1 gap-6 w-full max-w-5xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <Link href="/orders" className="text-xs font-medium text-[#0369A1] hover:underline flex items-center gap-1 mb-1.5">
+        <div className="mb-6">
+          <Link href="/orders" className="text-xs font-medium text-[#DC2626] hover:underline flex items-center gap-1 mb-1.5">
             <ArrowLeft className="w-3.5 h-3.5" /> Kembali
           </Link>
           <h1 className="text-xl font-semibold text-[#0F172A]">
@@ -183,7 +183,7 @@ export default function OrderDetailPage() {
 function TimelineItem({ icon, title, time, desc, active }) {
   return (
     <div className="relative pl-6">
-      <div className={`absolute -left-[9px] top-0.5 w-4 h-4 rounded-full flex items-center justify-center ${active ? 'bg-[#0369A1] text-white' : 'bg-[#E2E8F0] text-[#94A3B8]'}`}>
+      <div className={`absolute -left-[9px] top-0.5 w-4 h-4 rounded-full flex items-center justify-center ${active ? 'bg-[#DC2626] text-white' : 'bg-[#E2E8F0] text-[#94A3B8]'}`}>
         {icon}
       </div>
       <h4 className="font-medium text-[#0F172A] text-sm">{title}</h4>

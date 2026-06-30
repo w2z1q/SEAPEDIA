@@ -105,7 +105,7 @@ export default function CartPage() {
                 </div>
 
                 <div className="flex flex-col flex-1 gap-1.5">
-                  <Link href={`/products/${item.product?.id}`} className="font-medium text-sm text-[#0F172A] hover:text-[#0369A1] transition-colors line-clamp-1">
+                  <Link href={`/products/${item.product?.id}`} className="font-medium text-sm text-[#0F172A] hover:text-[#DC2626] transition-colors line-clamp-1">
                     {item.product?.name}
                   </Link>
                   <span className="text-sm font-semibold text-[#0F172A]">{formatPrice(item.product?.price)}</span>

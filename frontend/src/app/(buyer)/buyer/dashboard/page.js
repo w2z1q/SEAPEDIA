@@ -100,7 +100,7 @@ export default function BuyerDashboardPage() {
               <span className="text-xs text-[#94A3B8]">Peran</span>
               <div className="flex flex-wrap gap-1.5 mt-1">
                 {rolesList.map((r) => (
-                  <span key={r} className={`px-2.5 py-1 rounded-md text-xs font-medium ${r === user?.activeRole ? 'bg-[#0369A1] text-white' : 'bg-[#F1F5F9] text-[#475569]'}`}>
+                  <span key={r} className={`px-2.5 py-1 rounded-md text-xs font-medium ${r === user?.activeRole ? 'bg-[#DC2626] text-white' : 'bg-[#F1F5F9] text-[#475569]'}`}>
                     {translateRole(r)} {r === user?.activeRole && '(aktif)'}
                   </span>
                 ))}
@@ -110,7 +110,7 @@ export default function BuyerDashboardPage() {
         </div>
 
         {/* Wallet */}
-        <div className="bg-[#0369A1] rounded-xl p-5 shadow-sm text-white flex flex-col justify-between">
+        <div className="bg-[#DC2626] rounded-xl p-5 shadow-sm text-white flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 text-white/70 text-xs font-medium">
               <Wallet className="w-4 h-4" />
@@ -121,7 +121,7 @@ export default function BuyerDashboardPage() {
             </div>
           </div>
           <Link href="/wallet" className="block mt-5">
-            <span className="w-full text-center bg-white text-[#0369A1] hover:bg-[#F8FAFC] font-medium py-2.5 rounded-lg text-sm transition-colors block">
+            <span className="w-full text-center bg-white text-[#DC2626] hover:bg-[#F8FAFC] font-medium py-2.5 rounded-lg text-sm transition-colors block">
               Top-up Saldo
             </span>
           </Link>
@@ -145,7 +145,7 @@ export default function BuyerDashboardPage() {
             </div>
           </div>
           <Link href="/orders" className="block pt-2 border-t border-[#E2E8F0]">
-            <span className="text-xs font-medium text-[#0369A1] hover:underline flex items-center gap-1">
+            <span className="text-xs font-medium text-[#DC2626] hover:underline flex items-center gap-1">
               Lihat riwayat pesanan
               <ChevronRight className="w-3.5 h-3.5" />
             </span>
@@ -157,7 +157,7 @@ export default function BuyerDashboardPage() {
       <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0]">
           <h3 className="text-sm font-semibold text-[#0F172A]">Riwayat Top-up</h3>
-          <Link href="/wallet" className="text-xs font-medium text-[#0369A1] hover:underline">Lihat semua</Link>
+          <Link href="/wallet" className="text-xs font-medium text-[#DC2626] hover:underline">Lihat semua</Link>
         </div>
 
         {topupHistory.length > 0 ? (

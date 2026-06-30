@@ -5,6 +5,7 @@ import api from '../../../../lib/axios';
 import { useAuth } from '../../../../lib/AuthContext';
 import Button from '../../../../components/Button';
 import ProtectedRoute from '../../../../components/ProtectedRoute';
+import SidebarLayout from '../../../../components/SidebarLayout';
 import { formatPrice, translateStatus, statusBadgeClass, formatDateTime } from '../../../../lib/utils';
 import { Package, TrendingUp, CheckCircle2, RotateCcw } from 'lucide-react';
 
@@ -65,6 +66,7 @@ export default function SellerOrdersPage() {
 
   return (
     <ProtectedRoute allowedRoles={['SELLER']}>
+      <SidebarLayout role="SELLER">
       {loading ? (
         <div className="w-full animate-pulse h-96 bg-white border border-[#E2E8F0] rounded-xl my-12 max-w-6xl mx-auto" />
       ) : (
@@ -244,6 +246,7 @@ export default function SellerOrdersPage() {
           </div>
         </div>
       )}
+      </SidebarLayout>
     </ProtectedRoute>
   );
 }

@@ -8,7 +8,7 @@ import Input from '../../../../components/Input';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { formatPrice } from '../../../../lib/utils';
-import { ArrowLeft, ShoppingCart, Package, Star, Minus, Plus, Send } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Package, Star, Minus, Plus, Send, X, AlertTriangle } from 'lucide-react';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -17,6 +17,7 @@ export default function ProductDetailPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  const [storeWarning, setStoreWarning] = useState(false);
   const [rating, setRating] = useState(5);
   const [content, setContent] = useState('');
   const [guestName, setGuestName] = useState('');
@@ -48,11 +49,16 @@ export default function ProductDetailPage() {
     if (!user) { window.location.href = '/login'; return; }
     try {
       setAdding(true);
+      setStoreWarning(false);
       await api.post('/cart', { productId: product.id, quantity: Number(quantity) });
       setNotification(`${quantity} ${product.name} ditambahkan ke keranjang`);
       setTimeout(() => setNotification(''), 3000);
     } catch (error) {
-      alert(error.response?.data?.message || 'Gagal menambahkan ke keranjang');
+      if (error.response?.status === 409) {
+        setStoreWarning(true);
+      } else {
+        alert(error.response?.data?.message || 'Gagal menambahkan ke keranjang');
+      }
     } finally {
       setAdding(false);
     }
@@ -159,6 +165,23 @@ export default function ProductDetailPage() {
                 </button>
               </div>
             </div>
+            
+            {storeWarning && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2.5 relative mb-3">
+                <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                <div className="pr-6">
+                  <h4 className="text-sm font-semibold text-red-900">Toko Berbeda</h4>
+                  <p className="text-xs text-red-800 mt-0.5 leading-snug">Keranjangmu sudah berisi barang dari toko lain. Menyelesaikan ini akan mengganti isi keranjang dengan produk dari toko ini. Lanjutkan dengan hapus keranjang?</p>
+                  <Button variant="outline" size="sm" className="mt-2 text-xs border-red-200 text-red-700 bg-white" onClick={async () => {
+                    // Quick clear cart via backend if there was a direct endpoint, 
+                    // else we can just show warning. The backend throws 409. The user actually needs to clear the cart or we can add a 'force: true' to the endpoint.
+                    // For now, the user must clear it manually or we redirect to cart.
+                    window.location.href = '/cart';
+                  }}>Lihat Keranjang</Button>
+                </div>
+                <button onClick={() => setStoreWarning(false)} className="absolute top-2 right-2 text-red-500 hover:text-red-700"><X className="w-4 h-4" /></button>
+              </div>
+            )}
 
             <Button variant="primary" size="lg" isLoading={adding} disabled={product.stock === 0} onClick={handleAddToCart} className="w-full">
               <ShoppingCart className="w-5 h-5" />

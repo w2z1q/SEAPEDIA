@@ -6,6 +6,7 @@ import { useAuth } from '../../../../lib/AuthContext';
 import Button from '../../../../components/Button';
 import Input from '../../../../components/Input';
 import ProtectedRoute from '../../../../components/ProtectedRoute';
+import SidebarLayout from '../../../../components/SidebarLayout';
 import { formatPrice } from '../../../../lib/utils';
 import { Shield, RefreshCw, Tag, Percent, Users, Store, Package, ShoppingBag, Truck, Clock, X, CheckCircle, AlertTriangle } from 'lucide-react';
 
@@ -172,6 +173,7 @@ export default function AdminDashboardPage() {
 
   return (
     <ProtectedRoute allowedRoles={['ADMIN']}>
+      <SidebarLayout role="ADMIN">
       {loading && !stats ? (
         <div className="w-full animate-pulse h-96 bg-white border border-[#E2E8F0] rounded-xl my-12 max-w-7xl mx-auto" />
       ) : (
@@ -727,6 +729,7 @@ export default function AdminDashboardPage() {
           )}
         </div>
       )}
+      </SidebarLayout>
     </ProtectedRoute>
   );
 }

@@ -6,6 +6,7 @@ import { useAuth } from '../../../../lib/AuthContext';
 import Button from '../../../../components/Button';
 import Input from '../../../../components/Input';
 import ProtectedRoute from '../../../../components/ProtectedRoute';
+import SidebarLayout from '../../../../components/SidebarLayout';
 import { formatPrice } from '../../../../lib/utils';
 import { Plus, X, Package, Edit, Trash2 } from 'lucide-react';
 
@@ -107,6 +108,7 @@ export default function SellerProductsPage() {
 
   return (
     <ProtectedRoute allowedRoles={['SELLER']}>
+      <SidebarLayout role="SELLER">
       {loading ? (
         <div className="w-full animate-pulse h-96 bg-white border border-[#E2E8F0] rounded-xl my-12" />
       ) : (
@@ -241,6 +243,7 @@ export default function SellerProductsPage() {
           )}
         </div>
       )}
+      </SidebarLayout>
     </ProtectedRoute>
   );
 }

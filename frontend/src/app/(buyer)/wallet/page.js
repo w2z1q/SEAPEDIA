@@ -65,7 +65,7 @@ export default function WalletPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="space-y-5">
           {/* Balance Card */}
-          <div className="bg-[#0369A1] rounded-xl p-5 shadow-sm text-white">
+          <div className="bg-[#DC2626] rounded-xl p-5 shadow-sm text-white">
             <div className="flex items-center gap-2 text-white/70 text-xs font-medium">
               <Wallet className="w-4 h-4" />
               <span>Saldo Aktif</span>
@@ -89,7 +89,7 @@ export default function WalletPage() {
                   onClick={() => setTopupAmount(nominal)}
                   className={`py-2 px-3 rounded-lg border font-medium text-sm transition-colors ${
                     topupAmount === nominal
-                      ? 'bg-[#0369A1] border-[#0369A1] text-white'
+                      ? 'bg-[#DC2626] border-[#DC2626] text-white'
                       : 'bg-white border-[#E2E8F0] text-[#0F172A] hover:bg-[#F8FAFC]'
                   }`}
                 >
@@ -103,7 +103,7 @@ export default function WalletPage() {
                 <label className="block text-sm font-medium text-[#0F172A] mb-1.5">Nominal lainnya</label>
                 <input
                   type="number" value={topupAmount} onChange={(e) => setTopupAmount(e.target.value)} min={10000} step={10000} required
-                  className="w-full rounded-lg bg-white border border-[#E2E8F0] py-2.5 px-3.5 text-sm text-[#0F172A] font-medium focus:outline-none focus:border-[#0369A1]"
+                  className="w-full rounded-lg bg-white border border-[#E2E8F0] py-2.5 px-3.5 text-sm text-[#0F172A] font-medium focus:outline-none focus:border-[#DC2626]"
                 />
               </div>
               <Button variant="primary" isLoading={processing} className="w-full">Top-up Sekarang</Button>

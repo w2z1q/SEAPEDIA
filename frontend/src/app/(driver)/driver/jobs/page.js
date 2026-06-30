@@ -5,6 +5,7 @@ import api from '../../../../lib/axios';
 import { useAuth } from '../../../../lib/AuthContext';
 import Button from '../../../../components/Button';
 import ProtectedRoute from '../../../../components/ProtectedRoute';
+import SidebarLayout from '../../../../components/SidebarLayout';
 import { formatPrice, translateStatus, statusBadgeClass, formatDateTime } from '../../../../lib/utils';
 import { Truck, Search, MapPin, Package, Clock, ShieldCheck, X } from 'lucide-react';
 import Link from 'next/link';
@@ -52,6 +53,7 @@ export default function DriverJobsPage() {
 
   return (
     <ProtectedRoute allowedRoles={['DRIVER']}>
+      <SidebarLayout role="DRIVER">
       {loading ? (
         <div className="w-full animate-pulse h-96 bg-white border border-[#E2E8F0] rounded-xl my-12 max-w-6xl mx-auto" />
       ) : (
@@ -222,6 +224,7 @@ export default function DriverJobsPage() {
           )}
         </div>
       )}
+      </SidebarLayout>
     </ProtectedRoute>
   );
 }

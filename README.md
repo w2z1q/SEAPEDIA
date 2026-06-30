@@ -1,184 +1,91 @@
-# 🌊 SEAPEDIA — B2B Marine & Fishery Marketplace
+# SEAPEDIA - Marketplace Terpercaya Indonesia
 
-**SEAPEDIA** adalah platform B2B marketplace modern yang menghubungkan nelayan, petambak, dan pengusaha kelautan dengan pembeli di seluruh Indonesia. Sistem ini mengintegrasikan seluruh alur e-commerce kelautan, mulai dari manajemen toko, pengiriman terintegrasi oleh kurir, dompet digital (wallet), hingga pemantauan SLA pesanan secara real-time.
+SEAPEDIA adalah platform *marketplace* terintegrasi yang mendukung multi-peran (Buyer, Seller, Driver, Admin) dalam satu ekosistem tunggal. Proyek ini dibangun untuk menyelesaikan *Technical Challenge COMPFEST 18* secara penuh (Mencapai Level 1 hingga 7).
 
----
-
-## 💻 Tech Stack
-
-| Bagian | Teknologi | Deskripsi |
-| :--- | :--- | :--- |
-| **Backend** | Express.js, Prisma ORM | RESTful API server dengan arsitektur modular & service pattern |
-| **Database** | PostgreSQL (Supabase) | Database relasional dengan integritas skema yang kuat |
-| **Frontend** | Next.js 16, TypeScript | App Router, Server/Client components, arsitektur berbasis grup rute |
-| **Styling** | Tailwind CSS | Utility-first CSS dengan desain sistem bernuansa kelautan (Primary: `#0369A1`) |
-| **State & API** | Zustand, Axios | Manajemen state lokal dan interceptor permintaan HTTP terintegrasi |
-| **Auth** | JWT (JSON Web Tokens) | Token-based authentication & otorisasi berbasis Role-Based Access Control (RBAC) |
+## 🚀 Fitur Utama
+1. **Multi-Role dalam 1 Akun**: Seorang user dapat menjadi Buyer, Seller, Driver, atau Admin.
+2. **Dashboard Spesifik Peran**: Sidebar profesional khusus untuk manajemen Toko, Kurir, dan Admin.
+3. **Sistem Belanja Lengkap**: Katalog Publik, Keranjang (Single-Store), Checkout dengan PPN 12%, dan Dompet/Wallet.
+4. **Voucher & Promo**: Dukungan diskon yang dikelola secara sentral oleh Admin.
+5. **Ekosistem Logistik Terpadu**: Seller mengemas barang, Driver mengambil pesanan.
+6. **Auto-Overdue (SLA)**: Pengembalian dana & stok otomatis jika pengiriman terlambat.
 
 ---
 
-## 🔑 Demo Accounts (dari Seed)
-
-Gunakan akun berikut untuk menguji coba masing-masing peran (Role) di dalam sistem:
-
-| Peran | Email | Kata Sandi |
-| :--- | :--- | :--- |
-| 🛡️ **Admin** | `admin@seapedia.com` | `AdminSecure123!` |
-| 🏪 **Seller** | `seller@seapedia.com` | `SellerSecure123!` |
-| 🛒 **Buyer** | `buyer@seapedia.com` | `BuyerSecure123!` |
-| 🚚 **Driver** | `driver@seapedia.com` | `DriverSecure123!` |
+## 🛠️ Stack Teknologi
+- **Frontend**: Next.js 14 (App Router), TailwindCSS, Axios, Lucide Icons.
+- **Backend**: Node.js, Express.js, Prisma ORM, PostgreSQL.
+- **Keamanan**: JWT (JSON Web Tokens), bcrypt (Password Hashing), Helmet, Express Rate Limit, DOMPurify (XSS Protection frontend), Parameterized Query (via Prisma).
 
 ---
 
-## ⚙️ Environment Variables
+## 💻 Panduan Instalasi Lokal (Setup)
 
-Sebelum menjalankan aplikasi, pastikan Anda telah mengonfigurasi variabel lingkungan di masing-masing direktori.
+Pastikan kamu sudah menginstal **Node.js** (v18+) dan **PostgreSQL**.
 
-### Backend (`backend/.env`)
-```env
-DATABASE_URL="postgresql://postgres.[YOUR_SUPABASE_ID]:[PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres"
-JWT_SECRET="super-secret-jwt-key-seapedia-2026"
-FRONTEND_URL="http://localhost:3000"
-PORT=5000
-```
+### 1. Setup Backend
+1. Masuk ke folder backend: `cd backend`
+2. Install dependensi: `npm install`
+3. Buat file `.env` berdasarkan `env.example` dan sesuaikan koneksi database.
+   ```env
+   DATABASE_URL="postgresql://user:password@localhost:5432/seapedia"
+   DIRECT_URL="postgresql://user:password@localhost:5432/seapedia"
+   JWT_SECRET="rahasia_seapedia"
+   PORT=5000
+   ```
+4. Jalankan migrasi database: `npx prisma db push` atau `npx prisma migrate dev`
+5. Jalankan server: `npm run dev`
 
-### Frontend (`frontend/.env.local`)
-```env
-NEXT_PUBLIC_API_URL="http://localhost:5000"
-```
-
----
-
-## 🚀 Cara Menjalankan Aplikasi (How to Run)
-
-### 1. Menjalankan Backend
-Buka terminal baru, masuk ke direktori `backend`, instal dependensi, lalu lakukan migrasi dan seeding database:
-```bash
-cd backend
-npm install
-npx prisma generate
-npx prisma migrate deploy
-npx prisma db seed
-npm run dev
-```
-> Server backend akan berjalan di: **`http://localhost:5000`**
-
-### 2. Menjalankan Frontend
-Buka terminal baru, masuk ke direktori `frontend`, instal dependensi, lalu nyalakan server pengembangan:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-> Aplikasi frontend akan dapat diakses di: **`http://localhost:3000`**
+### 2. Setup Frontend
+1. Masuk ke folder frontend: `cd frontend`
+2. Install dependensi: `npm install`
+3. Buat file `.env.local` jika perlu mengarahkan API. Default terhubung ke `http://localhost:5000/api`.
+4. Jalankan server lokal: `npm run dev`
+5. Buka `http://localhost:3000` di browser.
 
 ---
 
-## 🌍 Panduan Deployment (Production Deployment)
-
-Untuk panduan lengkap mengenai arsitektur deployment, cara konfigurasi koneksi PostgreSQL (Supabase), serta instruksi deployment untuk Backend (Render / VPS) dan Frontend (Vercel), silakan merujuk ke dokumen khusus berikut:
-
-👉 **[📖 Panduan Lengkap Deployment SEAPEDIA (DEPLOYMENT.md)](./DEPLOYMENT.md)**
-
----
-
-## 📋 Aturan Bisnis (Business Rules)
-
-### 🏪 1. Single-Store Checkout
-Satu keranjang belanja (cart) **hanya boleh berisi produk dari satu toko yang sama**.  
-Jika pembeli (Buyer) mencoba menambahkan produk dari toko yang berbeda, sistem secara tegas akan menolak atau meminta pembeli untuk mengosongkan keranjang terlebih dahulu sebelum memasukkan produk dari toko baru.
-
-### 🎟️ 2. Voucher vs Promo
-```
-        ┌─────────────────────────┐           ┌─────────────────────────┐
-        │         VOUCHER         │           │          PROMO          │
-        ├─────────────────────────┤           ├─────────────────────────┤
-        │ • Punya Expiry Date     │           │ • Punya Expiry Date     │
-        │ • Punya Remaining Usage │           │ • Unlimited Usage       │
-        │ • Dibuat oleh Admin     │           │ • Dibuat oleh Admin     │
-        └─────────────────────────┘           └─────────────────────────┘
-```
-- **Voucher**: Memiliki batas tanggal kedaluwarsa (expiry date) dan memiliki batasan kuota pemakaian (remaining usage/bisa habis). Dibuat oleh Admin.
-- **Promo**: Memiliki batas tanggal kedaluwarsa (expiry date) namun **tidak memiliki batasan kuota pemakaian** (unlimited usage). Dibuat oleh Admin.
-
-### 🧮 3. Kalkulasi Checkout
-Urutan kalkulasi biaya pada saat checkout dilakukan di sisi backend secara mutlak dengan tahapan berikut:
-1. **Subtotal** = Total perkalian harga × kuantitas (quantity) seluruh item di dalam keranjang.
-2. **Diskon** = Potongan harga yang diperoleh dari Voucher atau Promo yang tervalidasi (jika ada).
-3. **Delivery Fee** = Biaya pengiriman berdasarkan metode pengiriman yang dipilih.
-4. **PPN (12%)** = Pajak Pertambahan Nilai sebesar 12%, dihitung secara akurat dari nilai **`(Subtotal - Diskon + Delivery Fee)`**.
-5. **Total Tagihan** = `Subtotal - Diskon + Delivery Fee + PPN`.
-
-**Tarif Pengiriman (Delivery Fee):**
-- ⚡ **Instant**: Rp 25.000
-- 📅 **Next Day**: Rp 15.000
-- 🚛 **Regular**: Rp 10.000
-
-### 🚚 4. Driver Earning Rule
-Setiap kali pesanan berhasil diantarkan dan diselesaikan, Kurir (Driver) berhak mendapatkan komisi penghasilan sebesar **100% dari total Delivery Fee** pesanan tersebut.
-
-### ⏱️ 5. Overdue SLA (Service Level Agreement)
-Sistem memantau durasi keterlambatan pengiriman pesanan sejak pertama kali dibuat berdasarkan batas SLA berikut:
-- ⚡ **Instant**: Batas SLA **1 hari (24 jam)** sejak pesanan dibuat.
-- 📅 **Next Day**: Batas SLA **2 hari (48 jam)** sejak pesanan dibuat.
-- 🚛 **Regular**: Batas SLA **3 hari (72 jam)** sejak pesanan dibuat.
-
-**Konsekuensi Pelanggaran SLA (Overdue):**
-Jika pesanan belum diproses/diantar melewati batas SLA di atas, maka sistem memberlakukan aturan berikut:
-1. Status pesanan diubah menjadi **`DIKEMBALIKAN`**.
-2. Saldo pembayaran dikembalikan ke dalam dompet (Wallet) milik Pembeli (Buyer).
-3. Stok produk yang sebelumnya dikurangi akan dipulihkan kembali ke dalam inventaris toko.
-4. Pendapatan kotor toko (Seller Income) yang sempat tercatat akan dibatalkan/di-reverse.
-
-> 💡 **Cara Simulasi Overdue:**  
-> Login sebagai Admin (`admin@seapedia.com`) → masuk ke **Admin Dashboard** → buka tab **SLA & Overdue** → masukkan simulasi rentang jumlah hari → klik tombol **Trigger**.
+## 🔑 Demo Akun (Seed Data)
+Kamu bisa menggunakan fungsi register pada web atau login dengan akun-akun berikut (Jika kamu melakukan seed data DB):
+- **Admin**: `admin@seapedia.com` / `password123`
+- **Seller Utama**: `seller@seapedia.com` / `password123` *(Memiliki Toko "Seapedia Beauty" dengan 10 produk Kosmetik/Perawatan)*
+- **Driver**: `driver@seapedia.com` / `password123`
+- Atau buat akun baru dan ubah rolenya sesuka hati menggunakan fitur *Multi-role switch*.
 
 ---
 
-## 🔒 Security Summary
+## 📜 Dokumentasi Aturan Bisnis Khusus (Rules Explained)
 
-| Aspek Keamanan | Implementasi di SEAPEDIA |
-| :--- | :--- |
-| **Pencegahan SQL Injection** | Memanfaatkan **Prisma ORM** yang otomatis menerapkan *parameterized queries* untuk seluruh interaksi database. |
-| **Perlindungan XSS & Headers** | Menggunakan middleware **`xss-clean`** untuk sanitasi input dan **`helmet`** untuk menyetel pengamanan header HTTP di Express. |
-| **Input Validation** | Verifikasi data berlapis di tingkat rute & controller menggunakan validator skema sebelum masuk ke Prisma. |
-| **Manajemen Sesi (JWT)** | Sesi otentikasi dikelola lewat token JWT dengan masa kedaluwarsa 7 hari, disimpan secara aman di `localStorage`. |
-| **Otorisasi RBAC** | Setiap endpoint terproteksi oleh kombinasi middleware `verifyToken` dan otorisasi ketat `authorize('ROLE')`. |
+### 1. Aturan Single-Store Checkout
+- **Penjelasan:** Satu keranjang belanja (Cart) **hanya boleh berisi produk dari satu toko yang sama**. 
+- **Implementasi Backend:** API `POST /api/cart` secara ketat memvalidasi ID toko produk. Jika ada perbedaan ID toko (melempar kode error HTTP 409), *request* akan ditolak.
+- **Implementasi UI:** Saat pembeli mengeklik "Tambah ke Keranjang" pada produk yang berasal dari toko yang berbeda dengan isi keranjangnya saat ini, sistem akan memunculkan *Pop-up Modal* interaktif. Peringatan ini mengharuskan pembeli untuk membersihkan keranjang lama terlebih dahulu sebelum dapat membeli produk baru tersebut.
 
----
+### 2. Aturan Kombinasi Diskon & Perhitungan PPN 12%
+- **PPN 12%:** Pajak Pertambahan Nilai (PPN) sebesar 12% dikenakan pada **Subtotal Harga Produk** *sebelum* ditambah ongkos kirim.
+- **Penerapan Diskon:** 
+  - Jika user menggunakan Promo/Voucher, diskon tersebut akan **mengurangi Subtotal Produk terlebih dahulu**, baru kemudian PPN 12% dihitung dari Subtotal *setelah diskon*.
+  - *Rumus:* `Total = (Subtotal - Diskon) + PPN(12% dari (Subtotal - Diskon)) + Ongkir`.
 
-## 🔄 Order Status Lifecycle
+### 3. Aturan Earning Driver (Upah Kurir)
+- Driver bertugas mengambil order dengan status `Menunggu Pengirim` dan mengubahnya menjadi `Sedang Dikirim`, lalu `Pesanan Selesai`.
+- Upah driver diambil **sebesar 100% dari biaya Ongkos Kirim (Shipping Cost)** pesanan tersebut.
+- Uang akan dikreditkan otomatis ke pendapatan Driver di Dashboard Driver saat Driver mengonfirmasi bahwa pesanan *Selesai*.
 
-Alur hidup (lifecycle) status pesanan dari awal hingga selesai mengikuti sekuens berikut:
-
-```
-[ SEDANG_DIKEMAS ] ──► [ MENUNGGU_PENGIRIM ] ──► [ SEDANG_DIKIRIM ] ──► [ PESANAN_SELESAI ]
-        │
-        └─► (Jika melebihi SLA / Batal) ──► [ DIKEMBALIKAN ]
-```
-
----
-
-## 📖 API Documentation
-
-Dokumentasi API interaktif lengkap menggunakan OpenAPI / Swagger UI dapat diakses secara langsung melalui tautan berikut ketika backend aktif:
-
-👉 **`http://localhost:5000/api-docs`**
+### 4. SLA Overdue & Cara Simulasi Waktu
+- **Service Level Agreement (SLA) Pengiriman:**
+  - Instant: Maksimal 1 hari.
+  - Next Day: Maksimal 2 hari.
+  - Regular: Maksimal 3 hari.
+- Jika order melewati batas waktu ini saat masih berstatus `SEDANG_DIKIRIM`, order dianggap **Overdue**.
+- **Auto-Refund/Return:** Sistem akan mengubah status menjadi `DIKEMBALIKAN`. Uang (Subtotal+Ongkir+PPN) akan di-*refund* sepenuhnya ke Dompet (Wallet) Pembeli, Pendapatan tertahan Seller akan ditarik (Reverse Income), dan Stok Produk akan dikembalikan.
+- **Cara Simulasi Waktu:** Di **Dashboard Admin**, terdapat fungsi "Simulasi Hari Berjalan". Admin dapat mempercepat waktu (misal: tambah +3 Hari) dan menekan tombol simulasi. Sistem akan memproses semua order yang *overdue*.
 
 ---
 
-## 🧪 Testing Guide End-to-End (E2E)
+## 🛡️ Catatan Keamanan (Security Notes)
 
-Ikuti langkah-langkah terstruktur berikut untuk memverifikasi seluruh alur bisnis SEAPEDIA dari awal hingga akhir:
-
-```text
-1. 🚀 INISIALISASI      : Jalankan server backend dan aplikasi frontend di localhost.
-2. 🏪 REGISTER SELLER   : Login sebagai Seller (seller@seapedia.com) → buat Toko baru → tambahkan produk hasil laut.
-3. 🛒 BUYER CHECKOUT    : Login sebagai Buyer (buyer@seapedia.com) → top up saldo di Wallet → masukkan produk ke cart → pilih pengiriman & selesaikan checkout.
-4. 📦 SELLER PROCESSING : Login kembali sebagai Seller → masuk ke daftar pesanan → proses pesanan dari status "Sedang Dikemas" menjadi "Menunggu Pengirim".
-5. 🚚 DRIVER DELIVERY   : Login sebagai Driver (driver@seapedia.com) → masuk ke halaman Bursa Kerja (Jobs) → ambil job pengiriman → perbarui status hingga selesai.
-6. 🛡️ ADMIN SIMULATION  : Login sebagai Admin (admin@seapedia.com) → pantau Dasbor Monitoring → buat kode Voucher baru → lakukan simulasi Trigger Overdue SLA.
-```
-
----
-*Dikembangkan untuk menghadirkan pengalaman marketplace perikanan dan kelautan B2B terbaik di Indonesia.*
+- **Cegah SQL Injection:** Aplikasi menggunakan **Prisma ORM** yang secara bawaan melakukan eksekusi *Parameterized Queries*, sehingga terhindar dari SQL Injection.
+- **Cegah XSS (Cross-Site Scripting):** Input dari user seperti *Review Produk* ditangani dengan aman oleh React DOM (meng-*escape* HTML).
+- **Autentikasi & RBAC:** Endpoint API diamankan dengan *middleware* `verifyToken` dan pemeriksaan otoritas (*Role-Based Access Control*). Memanipulasi *Local Storage* di frontend tidak akan bisa membobol izin akses ke backend.
+- **Rate Limiting:** Terdapat Express Rate Limit pada endpoint `/register` dan `/login` untuk mencegah *Brute Force*.

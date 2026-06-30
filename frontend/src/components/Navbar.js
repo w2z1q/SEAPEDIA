@@ -1,208 +1,386 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../lib/AuthContext';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { translateRole } from '../lib/utils';
-import { LogOut, ShoppingBag, Menu, X } from 'lucide-react';
+import {
+  ShoppingCart,
+  Search,
+  X,
+  LayoutDashboard,
+  Wallet,
+  PackageCheck,
+  LogOut,
+  ChevronDown,
+  User,
+  Home,
+  Menu,
+  MapPin,
+} from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout, switchRole } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const dropdownRef = useRef(null);
+  const searchRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close mobile search on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchOpen && searchRef.current && !searchRef.current.contains(e.target)) {
+        setSearchOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [searchOpen]);
 
   if (pathname?.startsWith('/login') || pathname?.startsWith('/register')) {
     return null;
   }
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchOpen(false);
+    }
+  };
+
   const handleRoleSwitch = async (role) => {
     setSwitching(true);
     await switchRole(role);
     setSwitching(false);
+    setDropdownOpen(false);
     if (role === 'SELLER') window.location.href = '/seller/dashboard';
     else if (role === 'DRIVER') window.location.href = '/driver/dashboard';
     else if (role === 'ADMIN') window.location.href = '/admin/dashboard';
     else window.location.href = '/buyer/dashboard';
   };
 
+  const handleLogout = () => {
+    setDropdownOpen(false);
+    logout();
+  };
+
+  // Get initials from name
+  const getInitials = (name) => {
+    if (!name) return 'U';
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  };
+
+  const activeRole = user?.activeRole || user?.role || 'BUYER';
+  const isBuyer = activeRole === 'BUYER';
+  const isDashboardRole = pathname?.startsWith('/seller') || pathname?.startsWith('/driver') || pathname?.startsWith('/admin');
+
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-[#E2E8F0] h-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between gap-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-          <img 
-            src="/logo.png" 
-            onError={(e) => { e.target.onerror = null; e.target.src = '/hasil-laut.jpeg'; }} 
-            alt="Seapedia Logo" 
-            className="w-9 h-9 rounded-lg object-cover border border-[#E2E8F0] group-hover:opacity-90 transition-opacity shadow-sm" 
-          />
-          <span className="text-lg font-semibold tracking-tight text-[#0F172A]">
-            SEAPEDIA
+    <header className="sticky top-0 z-50 w-full bg-white shadow-sm" style={{ borderBottom: '1px solid #FECACA' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-3">
+
+        {/* ── Logo ── */}
+        <Link
+          href="/"
+          className="shrink-0 flex items-center gap-1 group"
+          aria-label="SEAPEDIA beranda"
+        >
+          <span
+            className="text-xl font-bold tracking-tight"
+            style={{ color: '#DC2626', letterSpacing: '-0.5px' }}
+          >
+            SEA
+          </span>
+          <span className="text-xl font-bold tracking-tight text-gray-900" style={{ letterSpacing: '-0.5px' }}>
+            PEDIA
           </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">
-          {(!user || user.activeRole === 'BUYER') && (
-            <>
-              <NavLink href="/" active={pathname === '/'}>Katalog</NavLink>
-              {user && (
-                <>
-                  <NavLink href="/buyer/dashboard" active={pathname === '/buyer/dashboard'}>Dashboard</NavLink>
-                  <NavLink href="/cart" active={pathname === '/cart'}>Keranjang</NavLink>
-                  <NavLink href="/orders" active={pathname === '/orders'}>Pesanan</NavLink>
-                  <NavLink href="/wallet" active={pathname === '/wallet'}>Dompet</NavLink>
-                </>
+        {/* ── Search Bar (desktop) ── */}
+        {!isDashboardRole && (
+          <form
+            onSubmit={handleSearch}
+            className="hidden md:flex flex-1 mx-4 relative"
+          >
+            <div className="relative w-full">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari produk..."
+                className="w-full rounded-full border bg-gray-50 py-2.5 pl-10 pr-4 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 transition-all"
+                style={{
+                  borderColor: '#E5E7EB',
+                  '--tw-ring-color': '#FCA5A5',
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#DC2626';
+                  e.target.style.background = '#fff';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E5E7EB';
+                  e.target.style.background = '#F9FAFB';
+                }}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               )}
-            </>
+            </div>
+            <button
+              type="submit"
+              className="ml-2 px-5 py-2 rounded-full text-sm font-semibold text-white transition-colors shrink-0"
+              style={{ background: '#DC2626' }}
+              onMouseEnter={(e) => (e.target.style.background = '#B91C1C')}
+              onMouseLeave={(e) => (e.target.style.background = '#DC2626')}
+            >
+              Cari
+            </button>
+          </form>
+        )}
+
+        {/* ── Right Actions ── */}
+        <div className="ml-auto flex items-center gap-2 shrink-0">
+
+          {/* Mobile: Search toggle */}
+          {!isDashboardRole && (
+            <button
+              onClick={() => setSearchOpen(!searchOpen)}
+              className="md:hidden p-2 rounded-full text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+              aria-label="Cari"
+            >
+              <Search className="w-5 h-5" />
+            </button>
           )}
 
-          {user?.activeRole === 'SELLER' && (
-            <>
-              <NavLink href="/seller/dashboard" active={pathname === '/seller/dashboard'}>Dashboard</NavLink>
-              <NavLink href="/seller/products" active={pathname === '/seller/products'}>Produk</NavLink>
-              <NavLink href="/seller/orders" active={pathname === '/seller/orders'}>Pesanan</NavLink>
-            </>
-          )}
-
-          {user?.activeRole === 'DRIVER' && (
-            <>
-              <NavLink href="/driver/dashboard" active={pathname === '/driver/dashboard'}>Dashboard</NavLink>
-              <NavLink href="/driver/jobs" active={pathname === '/driver/jobs'}>Lowongan Antar</NavLink>
-            </>
-          )}
-
-          {user?.activeRole === 'ADMIN' && (
-            <NavLink href="/admin/dashboard" active={pathname === '/admin/dashboard'}>Dashboard</NavLink>
-          )}
-        </nav>
-
-        {/* Right side */}
-        <div className="flex items-center gap-3">
           {user ? (
-            <div className="flex items-center gap-3">
-              {/* Role selector */}
-              <div className="hidden sm:flex items-center">
-                {user.roles && user.roles.length > 1 ? (
-                  <select
-                    value={user.activeRole || 'BUYER'}
-                    onChange={(e) => handleRoleSwitch(e.target.value)}
-                    disabled={switching}
-                    className="bg-[#0369A1] text-white text-xs font-medium rounded-lg py-1.5 px-3 border-none focus:ring-2 focus:ring-[#0369A1]/40 outline-none cursor-pointer disabled:opacity-50 shadow-sm"
+            <>
+              {/* Cart icon (buyer only) */}
+              {isBuyer && (
+                <Link
+                  href="/cart"
+                  className="relative p-2 rounded-full text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                  aria-label="Keranjang belanja"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                </Link>
+              )}
+
+              {/* Avatar dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-1.5 group"
+                  aria-expanded={dropdownOpen}
+                  aria-haspopup="true"
+                >
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-sm transition-opacity group-hover:opacity-90"
+                    style={{ background: '#DC2626' }}
                   >
-                    {user.roles.map((r) => (
-                      <option key={r} value={r}>
-                        {r === 'BUYER' ? user.name || 'Pembeli' : translateRole(r)}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span className="bg-[#0369A1] text-white text-xs font-medium rounded-lg py-1.5 px-3 shadow-sm">
-                    {(user.activeRole || user.role || 'BUYER') === 'BUYER'
-                      ? user.name || 'Pembeli'
-                      : translateRole(user.activeRole || user.role)}
-                  </span>
+                    {getInitials(user.name)}
+                  </div>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {/* Dropdown Panel */}
+                {dropdownOpen && (
+                  <div
+                    className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-fade-slide-down"
+                  >
+                    {/* User info */}
+                    <div className="px-4 py-3 border-b border-gray-100 bg-red-50">
+                      <p className="font-semibold text-sm text-gray-900 truncate">{user.name}</p>
+                      <p className="text-xs mt-0.5 font-medium" style={{ color: '#DC2626' }}>
+                        {translateRole(activeRole)}
+                      </p>
+                    </div>
+
+                    {/* Role switcher (if multi-role) */}
+                    {user.roles && user.roles.length > 1 && (
+                      <div className="px-3 py-2 border-b border-gray-100">
+                        <p className="text-xs text-gray-400 mb-1.5 font-medium">Ganti Peran</p>
+                        <div className="flex flex-wrap gap-1">
+                          {user.roles.map((r) => (
+                            <button
+                              key={r}
+                              onClick={() => handleRoleSwitch(r)}
+                              disabled={switching || r === activeRole}
+                              className="text-xs px-2.5 py-1 rounded-full font-medium transition-colors disabled:opacity-60"
+                              style={
+                                r === activeRole
+                                  ? { background: '#DC2626', color: '#fff' }
+                                  : { background: '#F3F4F6', color: '#374151' }
+                              }
+                            >
+                              {translateRole(r)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Menu items */}
+                    <div className="py-1">
+                      <DropdownItem
+                        icon={<LayoutDashboard className="w-4 h-4" />}
+                        href={
+                          activeRole === 'SELLER'
+                            ? '/seller/dashboard'
+                            : activeRole === 'DRIVER'
+                            ? '/driver/dashboard'
+                            : activeRole === 'ADMIN'
+                            ? '/admin/dashboard'
+                            : '/buyer/dashboard'
+                        }
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Dashboard
+                      </DropdownItem>
+
+                      {isBuyer && (
+                        <>
+                          <DropdownItem
+                            icon={<Wallet className="w-4 h-4" />}
+                            href="/wallet"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            Dompet
+                          </DropdownItem>
+                          <DropdownItem
+                            icon={<MapPin className="w-4 h-4" />}
+                            href="/addresses"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            Alamat Pengiriman
+                          </DropdownItem>
+                          <DropdownItem
+                            icon={<PackageCheck className="w-4 h-4" />}
+                            href="/orders"
+                            onClick={() => setDropdownOpen(false)}
+                          >
+                            Pesanan
+                          </DropdownItem>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Logout */}
+                    <div className="border-t border-gray-100 py-1">
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Keluar
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
-
-              {/* Logout */}
-              <button
-                onClick={logout}
-                className="flex items-center gap-2 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] text-[#475569] font-medium py-2 px-3.5 rounded-lg text-sm transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:block">Keluar</span>
-              </button>
-            </div>
+            </>
           ) : (
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="font-medium text-sm text-[#0369A1] hover:bg-[#EFF6FF] border border-[#E2E8F0] px-4 py-2 rounded-lg transition-colors"
+                className="hidden sm:inline-flex text-sm font-semibold px-4 py-2 rounded-full border transition-colors"
+                style={{ borderColor: '#DC2626', color: '#DC2626' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#FEF2F2';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                }}
               >
                 Masuk
               </Link>
               <Link
                 href="/register"
-                className="font-medium text-sm bg-[#0369A1] text-white hover:bg-[#075985] px-4 py-2 rounded-lg transition-colors"
+                className="text-sm font-semibold px-4 py-2 rounded-full text-white transition-colors"
+                style={{ background: '#DC2626' }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = '#B91C1C')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = '#DC2626')}
               >
                 Daftar
               </Link>
             </div>
           )}
-
-          {/* Mobile menu toggle */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-[#475569] hover:bg-[#F8FAFC] rounded-lg transition-colors"
-          >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
         </div>
       </div>
 
-      {/* Mobile Nav */}
-      {mobileOpen && (
-        <div className="md:hidden bg-white border-t border-[#E2E8F0] px-4 py-3 space-y-1">
-          {(!user || user.activeRole === 'BUYER') && (
-            <>
-              <MobileLink href="/" onClick={() => setMobileOpen(false)}>Katalog</MobileLink>
-              {user && (
-                <>
-                  <MobileLink href="/buyer/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</MobileLink>
-                  <MobileLink href="/cart" onClick={() => setMobileOpen(false)}>Keranjang</MobileLink>
-                  <MobileLink href="/orders" onClick={() => setMobileOpen(false)}>Pesanan</MobileLink>
-                  <MobileLink href="/wallet" onClick={() => setMobileOpen(false)}>Dompet</MobileLink>
-                </>
-              )}
-            </>
-          )}
-          {user?.activeRole === 'SELLER' && (
-            <>
-              <MobileLink href="/seller/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</MobileLink>
-              <MobileLink href="/seller/products" onClick={() => setMobileOpen(false)}>Produk</MobileLink>
-              <MobileLink href="/seller/orders" onClick={() => setMobileOpen(false)}>Pesanan</MobileLink>
-            </>
-          )}
-          {user?.activeRole === 'DRIVER' && (
-            <>
-              <MobileLink href="/driver/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</MobileLink>
-              <MobileLink href="/driver/jobs" onClick={() => setMobileOpen(false)}>Lowongan Antar</MobileLink>
-            </>
-          )}
-          {user?.activeRole === 'ADMIN' && (
-            <MobileLink href="/admin/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</MobileLink>
-          )}
+      {/* Mobile Search Bar (expand on toggle) */}
+      {searchOpen && !isDashboardRole && (
+        <div className="md:hidden px-4 pb-3 pt-1 bg-white border-t border-gray-100" ref={searchRef}>
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari produk..."
+                className="w-full rounded-full border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm focus:outline-none"
+                style={{ borderColor: '#DC2626' }}
+              />
+            </div>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-full text-sm font-semibold text-white shrink-0"
+              style={{ background: '#DC2626' }}
+            >
+              Cari
+            </button>
+          </form>
         </div>
       )}
+
+
     </header>
   );
 }
 
-function NavLink({ href, active, children }) {
-  return (
-    <Link
-      href={href}
-      className={`text-sm px-3 py-2 rounded-lg transition-colors ${
-        active
-          ? 'font-semibold text-[#0369A1] bg-[#EFF6FF]'
-          : 'font-medium text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC]'
-      }`}
-    >
-      {children}
-    </Link>
-  );
-}
-
-function MobileLink({ href, children, onClick }) {
+function DropdownItem({ icon, href, onClick, children }) {
   return (
     <Link
       href={href}
       onClick={onClick}
-      className="block text-sm font-medium text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] px-3 py-2.5 rounded-lg transition-colors"
+      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors font-medium"
     >
+      <span className="text-gray-400 group-hover:text-red-500">{icon}</span>
       {children}
     </Link>
   );

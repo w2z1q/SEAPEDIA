@@ -149,7 +149,7 @@ export default function CheckoutPage() {
           {/* Alamat */}
           <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm space-y-4">
             <div className="flex items-center gap-2 pb-3 border-b border-[#E2E8F0]">
-              <MapPin className="w-4 h-4 text-[#0369A1]" />
+              <MapPin className="w-4 h-4 text-[#DC2626]" />
               <h3 className="text-sm font-semibold text-[#0F172A]">Alamat Pengiriman</h3>
             </div>
 
@@ -160,13 +160,13 @@ export default function CheckoutPage() {
                     key={addr.id}
                     onClick={() => setSelectedAddressId(addr.id)}
                     className={`p-4 rounded-lg border cursor-pointer transition-colors ${
-                      selectedAddressId === addr.id ? 'bg-[#EFF6FF] border-[#0369A1]' : 'bg-white border-[#E2E8F0] hover:border-[#CBD5E1]'
+                      selectedAddressId === addr.id ? 'bg-[#FEF2F2] border-[#DC2626]' : 'bg-white border-[#E2E8F0] hover:border-[#CBD5E1]'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="font-medium text-[#0F172A] text-sm">{addr.city}</span>
                       {selectedAddressId === addr.id && (
-                        <span className="bg-[#0369A1] text-white text-xs font-medium px-2.5 py-0.5 rounded-full">Terpilih</span>
+                        <span className="bg-[#DC2626] text-white text-xs font-medium px-2.5 py-0.5 rounded-full">Terpilih</span>
                       )}
                     </div>
                     <p className="text-[#475569] text-sm">{addr.address}</p>
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
           {/* Metode Pengiriman */}
           <div className="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm space-y-4">
             <div className="flex items-center gap-2 pb-3 border-b border-[#E2E8F0]">
-              <Truck className="w-4 h-4 text-[#0369A1]" />
+              <Truck className="w-4 h-4 text-[#DC2626]" />
               <h3 className="text-sm font-semibold text-[#0F172A]">Metode Pengiriman</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -201,7 +201,7 @@ export default function CheckoutPage() {
                   key={opt.key}
                   onClick={() => setDeliveryMethod(opt.key)}
                   className={`p-4 rounded-lg border cursor-pointer transition-colors ${
-                    deliveryMethod === opt.key ? 'bg-[#EFF6FF] border-[#0369A1]' : 'bg-white border-[#E2E8F0] hover:border-[#CBD5E1]'
+                    deliveryMethod === opt.key ? 'bg-[#FEF2F2] border-[#DC2626]' : 'bg-white border-[#E2E8F0] hover:border-[#CBD5E1]'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -244,7 +244,7 @@ export default function CheckoutPage() {
             <div className="flex gap-2">
               <input
                 type="text" value={voucherCode} onChange={(e) => setVoucherCode(e.target.value)}
-                placeholder="Masukkan kode" className="w-full rounded-lg bg-white border border-[#E2E8F0] py-2 px-3 text-sm text-[#0F172A] focus:border-[#0369A1] outline-none"
+                placeholder="Masukkan kode" className="w-full rounded-lg bg-white border border-[#E2E8F0] py-2 px-3 text-sm text-[#0F172A] focus:border-[#DC2626] outline-none"
               />
               <Button variant="secondary" size="sm" onClick={handleApplyVoucher}>Pakai</Button>
             </div>

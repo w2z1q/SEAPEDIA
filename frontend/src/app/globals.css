@@ -1,19 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #0369A1;
-  --color-primary-dark: #075985;
+  --color-primary: #DC2626;
+  --color-primary-dark: #B91C1C;
+  --color-primary-hover: #EF4444;
+  --color-primary-light: #FEF2F2;
+  --color-primary-border: #FECACA;
   --color-secondary: #0F766E;
   --color-accent: #F97316;
   --color-success: #16A34A;
   --color-warning: #EAB308;
   --color-danger: #DC2626;
-  --color-bg: #F8FAFC;
+  --color-bg: #F5F5F5;
   --color-surface: #FFFFFF;
-  --color-border: #E2E8F0;
-  --color-text: #0F172A;
-  --color-text-secondary: #475569;
-  --color-text-muted: #94A3B8;
+  --color-border: #E5E7EB;
+  --color-text: #111827;
+  --color-text-secondary: #4B5563;
+  --color-text-muted: #9CA3AF;
   --color-background: var(--color-bg);
   --color-foreground: var(--color-text);
   --font-sans: var(--font-inter);
@@ -50,4 +53,57 @@ html {
 *:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* Hide scrollbar for category bar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom Capsule Scrollbar for Category */
+.category-scrollbar::-webkit-scrollbar {
+  height: 8px; /* Slightly taller to make it easier to click */
+}
+.category-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.category-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #94A3B8;
+  border-radius: 10px;
+  border: 3px solid #FFF; /* Creates a tiny dot/thin capsule effect inside the invisible track */
+}
+.category-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #94A3B8 transparent;
+}
+
+/* Carousel transition */
+.carousel-slide {
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Selection highlight */
+::selection {
+  background: #FECACA;
+  color: #B91C1C;
+}
+
+/* Navbar dropdown animation */
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide-down {
+  animation: fadeSlideDown 0.15s ease-out;
 }
